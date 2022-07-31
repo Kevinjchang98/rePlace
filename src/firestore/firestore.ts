@@ -3,7 +3,8 @@ import { getFirestore } from 'firebase/firestore';
 
 await import('../../firebase_config.json')
     .then((data) => {
-        if (!data.isServer) {
+        if (data.isServer) {
+        } else {
             initializeApp({
                 apiKey: data.apiKey,
                 authDomain: data.authDomain,
@@ -13,7 +14,6 @@ await import('../../firebase_config.json')
                 appId: data.appId,
                 measurementId: data.measurementId,
             });
-        } else {
             initializeApp({
                 apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
                 authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,

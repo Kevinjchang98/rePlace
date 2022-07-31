@@ -13,12 +13,10 @@ import './App.css';
 function App() {
     const [count, setCount] = useState(0);
 
-    const [canvasData, setCanvasData] = useState<
-        QueryDocumentSnapshot<DocumentData>[]
-    >([]);
+    const [canvasData, setCanvasData] = useState<Array<Object>>([]);
 
     // Canvas collection from firestore
-    const canvasCollection = collection(firestore, 'canvas');
+    const canvasCollection = collection(firestore, 'pixels');
 
     // Getter for canvas data
     const getCanvasData = async () => {
@@ -31,7 +29,20 @@ function App() {
             result.push(snapshot);
         });
 
-        setCanvasData(result);
+        setCanvasData(
+            result.map((pixel) => ({
+                x: pixel.data().x,
+                y: pixel.data().y,
+                color: pixel.data().color,
+            }))
+        );
+
+        console.log(
+            result.map((pixel) => ({
+                index: pixel.id,
+                color: pixel.data().color,
+            }))
+        );
     };
 
     return (
@@ -57,7 +68,17 @@ function App() {
                 <p>
                     Edit <code>src/App.tsx</code> and save to test HMR
                 </p>
-                <p>Sample canvas data length: {canvasData.length}</p>
+                <button onClick={() => getCanvasData()}>
+                    Get Firebase data
+                </button>
+                <p>Sample canvas data: </p>
+                {canvasData.map((pixel: any, i) => {
+                    return (
+                        <p key={i}>
+                            [{pixel.x}, {pixel.y}] has color {pixel.color}
+                        </p>
+                    );
+                })}
             </div>
             <p className="read-the-docs">
                 Click on the Vite and React logos to learn more

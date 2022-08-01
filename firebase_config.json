@@ -1,5 +1,5 @@
 {
-    "isServer": false,
+    "isServer": true,
     "apiKey": "",
     "authDomain": "",
     "projectId": "",

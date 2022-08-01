@@ -4,6 +4,7 @@ import { getFirestore } from 'firebase/firestore';
 import data from '../../firebase_config.json';
 
 if (data.isServer) {
+    console.log(process.env.VITE_VERCEL_URL);
     console.log('Server');
     console.log(process.env.VITE_VERCEL_FIREBASE_API_KEY);
     initializeApp({

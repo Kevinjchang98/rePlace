@@ -12,7 +12,9 @@ import Display from './components/Display/Display';
 import AddPixelControls from './components/AddPixelControls/AddPixelControls';
 
 function App() {
-    const [canvasData, setCanvasData] = useState<Array<Object>>([]); // State of canvas
+    const [canvasData, setCanvasData] = useState<
+        Array<{ x: number; y: number; color: string }>
+    >([]); // State of canvas
 
     // Canvas collection from firestore
     const canvasCollection = collection(firestore, 'pixels');

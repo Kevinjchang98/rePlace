@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber';
-import { OrthographicCamera, MapControls } from '@react-three/drei';
+import { MapControls } from '@react-three/drei';
 import { useEffect } from 'react';
 
 interface CanvasProps {
@@ -42,26 +42,27 @@ function Display({ getCanvasData, canvasData }: CanvasProps) {
                 style={{
                     width: '800px',
                     height: '600px',
-                    border: '2px solid red',
                     backgroundColor: 'white',
                 }}
             >
-                <Canvas orthographic={true}>
-                    {/* TODO: Fix TS errors */}
-                    <OrthographicCamera
-                        makeDefault
-                        zoom={20}
-                        top={200}
-                        bottom={-200}
-                        left={200}
-                        right={-200}
-                        near={1}
-                        far={2000}
-                        position={[0, 0, 200]}
+                <Canvas
+                    orthographic={true}
+                    camera={{
+                        position: [0, 0, 50],
+                        zoom: 10,
+                        up: [0, 0, 1],
+                        far: 10000,
+                    }}
+                >
+                    {/* TODO: Verify if there's a better way to resolve TS errors with these props */}
+                    <MapControls
+                        addEventListener={undefined}
+                        hasEventListener={undefined}
+                        removeEventListener={undefined}
+                        dispatchEvent={undefined}
                     />
-                    {/* TODO: MapControls only lets us move horizontally and zoom in/out right now. Need to figure out vertical movement */}
-                    <MapControls />
-                    <pointLight position={[10, 10, 10]} />
+
+                    <pointLight position={[100, 100, 100]} />
 
                     {pixels}
                 </Canvas>

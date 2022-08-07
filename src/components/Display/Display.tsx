@@ -1,6 +1,7 @@
 import { Canvas } from '@react-three/fiber';
 import { MapControls } from '@react-three/drei';
 import { Color } from 'react-color-palette';
+import * as THREE from 'three';
 
 interface CanvasProps {
     canvasData: Array<{ x: number; y: number; color: string }>;
@@ -26,12 +27,17 @@ function Display({
     const SELECTABLE_CANVAS_HEIGHT = 1000; // Height of selectable canvas
     const INDICATOR_LINE_WIDTH = 0.1; // Thickness of selected pixel indicator outline
 
+    const pixelGeometry = new THREE.PlaneBufferGeometry();
+
     // Takes in canvasData, which is an array of objects of type PixelData and
     // returns meshes that contain a singular plane of specified color
     const pixels = canvasData.map((pixel: PixelData, i: number) => {
         return (
-            <mesh position={[pixel.x, pixel.y, 0]} key={i}>
-                <planeBufferGeometry />
+            <mesh
+                position={[pixel.x, pixel.y, 0]}
+                key={i}
+                geometry={pixelGeometry}
+            >
                 <meshStandardMaterial color={pixel.color} />
             </mesh>
         );
@@ -133,6 +139,7 @@ function Display({
                 }}
             >
                 <Canvas
+                    frameloop="demand"
                     orthographic={true}
                     camera={{
                         position: [0, 0, 50],

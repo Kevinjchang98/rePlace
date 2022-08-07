@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useColor } from 'react-color-palette';
 import {
     collection,
     DocumentData,
@@ -19,6 +20,7 @@ function App() {
         x: number;
         y: number;
     }>({ x: 0, y: 0 });
+    const [color, setColor] = useColor('hex', '#121212'); // Color of pixel to be edited
 
     // Canvas collection from firestore
     const canvasCollection = collection(firestore, 'pixels');
@@ -51,6 +53,7 @@ function App() {
                     canvasData={canvasData}
                     mousePosition={mousePosition}
                     setMousePosition={setMousePosition}
+                    color={color}
                 />
             </div>
 
@@ -66,7 +69,11 @@ function App() {
                 <AddPixelControls
                     firestore={firestore}
                     getCanvasData={getCanvasData}
+                    canvasData={canvasData}
+                    setCanvasData={setCanvasData}
                     mousePosition={mousePosition}
+                    color={color}
+                    setColor={setColor}
                 />
             </div>
         </>

@@ -1,20 +1,25 @@
-import { useState } from 'react';
 import { doc, setDoc } from 'firebase/firestore';
-import { Color, ColorPicker, useColor } from 'react-color-palette';
+import { Color, ColorPicker } from 'react-color-palette';
 import 'react-color-palette/lib/css/styles.css';
 
 interface AddPixelControlsProps {
     firestore: any; // TODO: Update firestore type
     getCanvasData: Function;
+    canvasData: Array<{ x: number; y: number; color: string }>;
+    setCanvasData: Function;
     mousePosition: { x: number; y: number };
+    color: Color;
+    setColor: Function;
 }
 function AddPixelControls({
     firestore,
     getCanvasData,
+    canvasData,
+    setCanvasData,
     mousePosition,
+    color,
+    setColor,
 }: AddPixelControlsProps) {
-    const [color, setColor] = useColor('hex', '#121212'); // Color of pixel to be edited
-
     // Setter for canvas data
     const pushCanvasData = async (x: number, y: number, color: string) => {
         await setDoc(doc(firestore, 'pixels', String('x' + x + 'y' + y)), {
@@ -27,36 +32,29 @@ function AddPixelControls({
     // Push data and also get updated data when form submits
     const handleSubmit = () => {
         pushCanvasData(mousePosition.x, mousePosition.y, color.hex);
+        setCanvasData((prevState: typeof canvasData) => [
+            ...prevState,
+            { x: mousePosition.x, y: mousePosition.y, color: color.hex },
+        ]);
         getCanvasData();
     };
 
     return (
         <div>
-            {/* Temporary way to push data to database */}
-            <form>
-                <label>X coordinate: {mousePosition.x}</label>
-                <br />
-
-                <label>Y coordinate: {mousePosition.y}</label>
-                <br />
-
-                <label>
-                    Color in hex:
-                    <ColorPicker
-                        width={250}
-                        height={200}
-                        color={color}
-                        onChange={setColor}
-                        hideHSV
-                        dark
-                    />
-                </label>
-            </form>
-
+            Color:
+            <ColorPicker
+                width={250}
+                height={200}
+                color={color}
+                onChange={(newColor) => {
+                    setColor(newColor);
+                }}
+                hideHSV
+                dark
+            />
             <br />
             <button onClick={handleSubmit}>Submit</button>
             <br />
-
             <br />
             <button onClick={() => getCanvasData()}>Refresh</button>
         </div>

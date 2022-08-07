@@ -6,6 +6,8 @@ import './App.css';
 import Display from './components/Display/Display';
 import AddPixelControls from './components/AddPixelControls/AddPixelControls';
 
+const CHUNK_SIZE = 64;
+
 function App() {
     const [canvasData, setCanvasData] = useState<
         Array<{ x: number; y: number; color: string }>
@@ -63,6 +65,30 @@ function App() {
                     //         parseInt(item.substring(item.search('y') + 1))
                     // );
 
+                    // global x coord but +64 if negative x chunk coord
+                    // parseInt(
+                    //     doc.id.substring(1, doc.id.search('y'))
+                    // ) *
+                    //     64 +
+                    // parseInt(item.substring(1, item.search('y'))) +
+                    // (parseInt(
+                    //     doc.id.substring(1, doc.id.search('y'))
+                    // ) < 0
+                    //     ? 64
+                    //     : 0)
+
+                    // global y coord but +64 if negative y chunk coord
+                    // parseInt(
+                    //     doc.id.substring(doc.id.search('y') + 1)
+                    // ) *
+                    //     64 +
+                    // parseInt(item.substring(item.search('y') + 1)) +
+                    // (parseInt(
+                    //     doc.id.substring(doc.id.search('y') + 1)
+                    // ) < 0
+                    //     ? 64
+                    //     : 0)
+
                     // doc.data()[item] = #00ff00
                     // console.log(doc.data()[item]);
 
@@ -73,14 +99,24 @@ function App() {
                                 parseInt(
                                     doc.id.substring(1, doc.id.search('y'))
                                 ) *
-                                    64 +
-                                parseInt(item.substring(1, item.search('y'))),
+                                    CHUNK_SIZE +
+                                parseInt(item.substring(1, item.search('y'))) +
+                                (parseInt(
+                                    doc.id.substring(1, doc.id.search('y'))
+                                ) < 0
+                                    ? CHUNK_SIZE
+                                    : 0),
                             y:
                                 parseInt(
                                     doc.id.substring(doc.id.search('y') + 1)
                                 ) *
-                                    64 +
-                                parseInt(item.substring(item.search('y') + 1)),
+                                    CHUNK_SIZE +
+                                parseInt(item.substring(item.search('y') + 1)) +
+                                (parseInt(
+                                    doc.id.substring(doc.id.search('y') + 1)
+                                ) < 0
+                                    ? CHUNK_SIZE
+                                    : 0),
                             color: doc.data()[item],
                         },
                     ]);
@@ -130,6 +166,7 @@ function App() {
             >
                 <AddPixelControls
                     firestore={firestore}
+                    CHUNK_SIZE={CHUNK_SIZE}
                     mousePosition={mousePosition}
                     color={color}
                     setColor={setColor}

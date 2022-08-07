@@ -4,12 +4,14 @@ import 'react-color-palette/lib/css/styles.css';
 
 interface AddPixelControlsProps {
     firestore: any; // TODO: Update firestore type
+    CHUNK_SIZE: number;
     mousePosition: { x: number; y: number };
     color: Color;
     setColor: Function;
 }
 function AddPixelControls({
     firestore,
+    CHUNK_SIZE,
     mousePosition,
     color,
     setColor,
@@ -34,7 +36,14 @@ function AddPixelControls({
 
         const newData: any = {};
 
-        newData[`x${x % 64}y${y % 64}`] = color;
+        console.log(`local: x${x % CHUNK_SIZE}y${y % CHUNK_SIZE}`);
+        console.log(
+            'global: x' +
+                Math.floor(x / CHUNK_SIZE) +
+                'y' +
+                Math.floor(y / CHUNK_SIZE)
+        );
+        newData[`x${x % CHUNK_SIZE}y${y % CHUNK_SIZE}`] = color;
 
         // console.log(newData);
 
@@ -44,7 +53,12 @@ function AddPixelControls({
                 doc(
                     firestore,
                     'chunks',
-                    String('x' + Math.floor(x / 64) + 'y' + Math.floor(y / 64))
+                    String(
+                        'x' +
+                            Math.floor(x / CHUNK_SIZE) +
+                            'y' +
+                            Math.floor(y / CHUNK_SIZE)
+                    )
                 ),
                 newData
             );
@@ -53,7 +67,12 @@ function AddPixelControls({
                 doc(
                     firestore,
                     'chunks',
-                    String('x' + Math.floor(x / 64) + 'y' + Math.floor(y / 64))
+                    String(
+                        'x' +
+                            Math.floor(x / CHUNK_SIZE) +
+                            'y' +
+                            Math.floor(y / CHUNK_SIZE)
+                    )
                 ),
                 newData
             );

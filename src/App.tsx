@@ -12,7 +12,13 @@ import Canvas from './components/Canvas/Canvas';
 import AddPixelControls from './components/AddPixelControls/AddPixelControls';
 
 function App() {
-    const [canvasData, setCanvasData] = useState<Array<Object>>([]); // State of canvas
+    const [canvasData, setCanvasData] = useState<
+        Array<{ x: number; y: number; color: string }>
+    >([]); // State of canvas
+    const [mousePosition, setMousePosition] = useState<{
+        x: number;
+        y: number;
+    }>({ x: 0, y: 0 });
 
     // Canvas collection from firestore
     const canvasCollection = collection(firestore, 'pixels');
@@ -40,11 +46,16 @@ function App() {
     return (
         <div className="App">
             <div className="card">
-                <Canvas getCanvasData={getCanvasData} canvasData={canvasData} />
+                <Display
+                    getCanvasData={getCanvasData}
+                    canvasData={canvasData}
+                    setMousePosition={setMousePosition}
+                />
 
                 <AddPixelControls
                     firestore={firestore}
                     getCanvasData={getCanvasData}
+                    mousePosition={mousePosition}
                 />
             </div>
         </div>

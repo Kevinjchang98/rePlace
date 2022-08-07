@@ -48,6 +48,7 @@ function App() {
             <Display
                 getCanvasData={getCanvasData}
                 canvasData={canvasData}
+                mousePosition={mousePosition}
                 setMousePosition={setMousePosition}
             />
 

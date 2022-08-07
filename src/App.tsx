@@ -63,6 +63,30 @@ function App() {
                     //         parseInt(item.substring(item.search('y') + 1))
                     // );
 
+                    // global x coord but +64 if negative x chunk coord
+                    // parseInt(
+                    //     doc.id.substring(1, doc.id.search('y'))
+                    // ) *
+                    //     64 +
+                    // parseInt(item.substring(1, item.search('y'))) +
+                    // (parseInt(
+                    //     doc.id.substring(1, doc.id.search('y'))
+                    // ) < 0
+                    //     ? 64
+                    //     : 0)
+
+                    // global y coord but +64 if negative y chunk coord
+                    // parseInt(
+                    //     doc.id.substring(doc.id.search('y') + 1)
+                    // ) *
+                    //     64 +
+                    // parseInt(item.substring(item.search('y') + 1)) +
+                    // (parseInt(
+                    //     doc.id.substring(doc.id.search('y') + 1)
+                    // ) < 0
+                    //     ? 64
+                    //     : 0)
+
                     // doc.data()[item] = #00ff00
                     // console.log(doc.data()[item]);
 
@@ -74,13 +98,23 @@ function App() {
                                     doc.id.substring(1, doc.id.search('y'))
                                 ) *
                                     64 +
-                                parseInt(item.substring(1, item.search('y'))),
+                                parseInt(item.substring(1, item.search('y'))) +
+                                (parseInt(
+                                    doc.id.substring(1, doc.id.search('y'))
+                                ) < 0
+                                    ? 64
+                                    : 0),
                             y:
                                 parseInt(
                                     doc.id.substring(doc.id.search('y') + 1)
                                 ) *
                                     64 +
-                                parseInt(item.substring(item.search('y') + 1)),
+                                parseInt(item.substring(item.search('y') + 1)) +
+                                (parseInt(
+                                    doc.id.substring(doc.id.search('y') + 1)
+                                ) < 0
+                                    ? 64
+                                    : 0),
                             color: doc.data()[item],
                         },
                     ]);

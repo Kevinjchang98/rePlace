@@ -34,6 +34,10 @@ function AddPixelControls({
 
         const newData: any = {};
 
+        console.log(`local: x${x % 64}y${y % 64}`);
+        console.log(
+            'global: x' + Math.floor(x / 64) + 'y' + Math.floor(y / 64)
+        );
         newData[`x${x % 64}y${y % 64}`] = color;
 
         // console.log(newData);

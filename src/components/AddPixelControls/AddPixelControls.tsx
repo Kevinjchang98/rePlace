@@ -1,4 +1,4 @@
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, updateDoc } from 'firebase/firestore';
 import { Color, ColorPicker } from 'react-color-palette';
 import 'react-color-palette/lib/css/styles.css';
 
@@ -23,9 +23,47 @@ function AddPixelControls({
         });
     };
 
+    const pushChunkData = async (x: number, y: number, color: string) => {
+        // console.log({
+        //     chunkX: Math.floor(x / 64),
+        //     chunkY: Math.floor(y / 64),
+        //     x: x % 64,
+        //     y: y % 64,
+        //     color: color,
+        // });
+
+        const newData: any = {};
+
+        newData[`x${x % 64}y${y % 64}`] = color;
+
+        // console.log(newData);
+
+        // Try to update existing chunk doc, if it doesn't exist then create it
+        try {
+            await updateDoc(
+                doc(
+                    firestore,
+                    'chunks',
+                    String('x' + Math.floor(x / 64) + 'y' + Math.floor(y / 64))
+                ),
+                newData
+            );
+        } catch (error) {
+            await setDoc(
+                doc(
+                    firestore,
+                    'chunks',
+                    String('x' + Math.floor(x / 64) + 'y' + Math.floor(y / 64))
+                ),
+                newData
+            );
+        }
+    };
+
     // Push data
     const handleSubmit = () => {
-        pushCanvasData(mousePosition.x, mousePosition.y, color.hex);
+        pushChunkData(mousePosition.x, mousePosition.y, color.hex);
+        // pushCanvasData(mousePosition.x, mousePosition.y, color.hex);
     };
 
     return (

@@ -67,6 +67,7 @@ function Display({ getCanvasData, canvasData, setMousePosition }: CanvasProps) {
 
                     <mesh
                         scale={[1000, 1000, 1]}
+                        position={[0, 0, -0.001]} // -0.001 to fix z-fighting
                         onClick={(e) => {
                             let mousePos = {
                                 x: Math.round(e.point.x),

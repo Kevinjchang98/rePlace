@@ -2,6 +2,7 @@ import { Canvas } from '@react-three/fiber';
 import { MapControls } from '@react-three/drei';
 import { Color } from 'react-color-palette';
 import { PlaneBufferGeometry, DoubleSide } from 'three';
+import { useMemo } from 'react';
 
 interface CanvasProps {
     canvasData: Array<{ x: number; y: number; color: string }>;
@@ -27,7 +28,7 @@ function Display({
     const SELECTABLE_CANVAS_HEIGHT = 1000; // Height of selectable canvas
     const INDICATOR_LINE_WIDTH = 0.1; // Thickness of selected pixel indicator outline
 
-    const pixelGeometry = new PlaneBufferGeometry();
+    const pixelGeometry = useMemo(() => new PlaneBufferGeometry(), []);
 
     // Takes in canvasData, which is an array of objects of type PixelData and
     // returns meshes that contain a singular plane of specified color

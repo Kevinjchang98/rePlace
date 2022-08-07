@@ -59,6 +59,7 @@ function Display({
     // TODO: Invert color if selected pixel is dark
     const selectedPixelIndicator = (
         <>
+            {/* Outline */}
             <mesh
                 position={[
                     mousePosition.x - (0.5 - INDICATOR_LINE_WIDTH / 2),
@@ -103,15 +104,17 @@ function Display({
                 <planeBufferGeometry />
                 <meshStandardMaterial color={'black'} />
             </mesh>
+
+            {/* Color indicator */}
             <mesh
                 position={[mousePosition.x, mousePosition.y, LAYER_OFFSET]}
                 scale={[
-                    1 - INDICATOR_LINE_WIDTH * 2,
-                    1 - INDICATOR_LINE_WIDTH * 2,
+                    1 - INDICATOR_LINE_WIDTH * 3,
+                    1 - INDICATOR_LINE_WIDTH * 3,
                     1,
                 ]}
             >
-                <planeBufferGeometry />
+                <circleBufferGeometry args={[0.3, 32]} />
                 <meshStandardMaterial color={color.hex} />
             </mesh>
         </>

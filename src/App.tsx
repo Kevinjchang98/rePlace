@@ -8,7 +8,7 @@ import {
 } from 'firebase/firestore';
 import { firestore } from './firestore/firestore';
 import './App.css';
-import Canvas from './components/Canvas/Canvas';
+import Display from './components/Display/Display';
 import AddPixelControls from './components/AddPixelControls/AddPixelControls';
 
 function App() {

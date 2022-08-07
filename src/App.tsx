@@ -15,6 +15,10 @@ function App() {
     const [canvasData, setCanvasData] = useState<
         Array<{ x: number; y: number; color: string }>
     >([]); // State of canvas
+    const [mousePosition, setMousePosition] = useState<{
+        x: number;
+        y: number;
+    }>({ x: 0, y: 0 });
 
     // Canvas collection from firestore
     const canvasCollection = collection(firestore, 'pixels');
@@ -41,17 +45,18 @@ function App() {
 
     return (
         <div className="App">
-            <div className="card">
-                <Display
-                    getCanvasData={getCanvasData}
-                    canvasData={canvasData}
-                />
+            <Display
+                getCanvasData={getCanvasData}
+                canvasData={canvasData}
+                mousePosition={mousePosition}
+                setMousePosition={setMousePosition}
+            />
 
-                <AddPixelControls
-                    firestore={firestore}
-                    getCanvasData={getCanvasData}
-                />
-            </div>
+            <AddPixelControls
+                firestore={firestore}
+                getCanvasData={getCanvasData}
+                mousePosition={mousePosition}
+            />
         </div>
     );
 }

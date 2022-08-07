@@ -154,7 +154,7 @@ function Display({
                         dispatchEvent={undefined}
                     />
 
-                    <pointLight position={[100, 100, 100]} />
+                    <ambientLight />
 
                     {mousePositionCapturePlane}
 

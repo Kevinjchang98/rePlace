@@ -1,7 +1,7 @@
 import { Canvas } from '@react-three/fiber';
 import { MapControls } from '@react-three/drei';
 import { Color } from 'react-color-palette';
-import { PlaneBufferGeometry } from 'three';
+import { PlaneBufferGeometry, DoubleSide } from 'three';
 
 interface CanvasProps {
     canvasData: Array<{ x: number; y: number; color: string }>;
@@ -38,7 +38,7 @@ function Display({
                 key={i}
                 geometry={pixelGeometry}
             >
-                <meshStandardMaterial color={pixel.color} />
+                <meshStandardMaterial side={DoubleSide} color={pixel.color} />
             </mesh>
         );
     });
@@ -57,7 +57,7 @@ function Display({
             }}
         >
             <planeBufferGeometry />
-            <meshStandardMaterial visible={false} />
+            <meshStandardMaterial side={DoubleSide} visible={false} />
         </mesh>
     );
 
@@ -75,7 +75,7 @@ function Display({
                 scale={[INDICATOR_LINE_WIDTH, 1, 1]}
             >
                 <planeBufferGeometry />
-                <meshStandardMaterial color={'black'} />
+                <meshStandardMaterial side={DoubleSide} color={'black'} />
             </mesh>
             <mesh
                 position={[
@@ -86,7 +86,7 @@ function Display({
                 scale={[INDICATOR_LINE_WIDTH, 1, 1]}
             >
                 <planeBufferGeometry />
-                <meshStandardMaterial color={'black'} />
+                <meshStandardMaterial side={DoubleSide} color={'black'} />
             </mesh>
             <mesh
                 position={[
@@ -97,7 +97,7 @@ function Display({
                 scale={[1, INDICATOR_LINE_WIDTH, 1]}
             >
                 <planeBufferGeometry />
-                <meshStandardMaterial color={'black'} />
+                <meshStandardMaterial side={DoubleSide} color={'black'} />
             </mesh>
             <mesh
                 position={[
@@ -108,7 +108,7 @@ function Display({
                 scale={[1, INDICATOR_LINE_WIDTH, 1]}
             >
                 <planeBufferGeometry />
-                <meshStandardMaterial color={'black'} />
+                <meshStandardMaterial side={DoubleSide} color={'black'} />
             </mesh>
 
             {/* Color indicator */}
@@ -121,7 +121,7 @@ function Display({
                 ]}
             >
                 <circleBufferGeometry args={[0.3, 32]} />
-                <meshStandardMaterial color={color.hex} />
+                <meshStandardMaterial side={DoubleSide} color={color.hex} />
             </mesh>
         </>
     );

@@ -1,18 +1,19 @@
 import { useState } from 'react';
 import { doc, setDoc } from 'firebase/firestore';
+import { Color, ColorPicker, useColor } from 'react-color-palette';
+import 'react-color-palette/lib/css/styles.css';
 
 interface AddPixelControlsProps {
     firestore: any; // TODO: Update firestore type
     getCanvasData: Function;
     mousePosition: { x: number; y: number };
 }
-
 function AddPixelControls({
     firestore,
     getCanvasData,
     mousePosition,
 }: AddPixelControlsProps) {
-    const [color, setColor] = useState<string>('000000'); // Color of pixel to be edited
+    const [color, setColor] = useColor('hex', '#121212'); // Color of pixel to be edited
 
     // Setter for canvas data
     const pushCanvasData = async (x: number, y: number, color: string) => {
@@ -25,12 +26,12 @@ function AddPixelControls({
 
     // Push data and also get updated data when form submits
     const handleSubmit = () => {
-        pushCanvasData(mousePosition.x, mousePosition.y, color);
+        pushCanvasData(mousePosition.x, mousePosition.y, color.hex);
         getCanvasData();
     };
 
     return (
-        <>
+        <div>
             {/* Temporary way to push data to database */}
             <form>
                 <label>X coordinate: {mousePosition.x}</label>
@@ -41,19 +42,24 @@ function AddPixelControls({
 
                 <label>
                     Color in hex:
-                    <input
-                        type="text"
-                        value={color}
-                        onChange={(e) => {
-                            setColor(e.target.value);
-                        }}
+                    <ColorPicker
+                        width={250}
+                        height={200}
+                        color={color}
+                        onChange={setColor}
+                        hideHSV
+                        dark
                     />
                 </label>
             </form>
 
             <br />
-            <button onClick={handleSubmit}>Push Firebase data</button>
-        </>
+            <button onClick={handleSubmit}>Submit</button>
+            <br />
+
+            <br />
+            <button onClick={() => getCanvasData()}>Refresh</button>
+        </div>
     );
 }
 

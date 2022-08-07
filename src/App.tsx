@@ -44,20 +44,32 @@ function App() {
     };
 
     return (
-        <div className="App">
-            <Display
-                getCanvasData={getCanvasData}
-                canvasData={canvasData}
-                mousePosition={mousePosition}
-                setMousePosition={setMousePosition}
-            />
+        <>
+            <div className="App">
+                <Display
+                    getCanvasData={getCanvasData}
+                    canvasData={canvasData}
+                    mousePosition={mousePosition}
+                    setMousePosition={setMousePosition}
+                />
+            </div>
 
-            <AddPixelControls
-                firestore={firestore}
-                getCanvasData={getCanvasData}
-                mousePosition={mousePosition}
-            />
-        </div>
+            <div
+                style={{
+                    position: 'absolute',
+                    background: '#888',
+                    padding: '10px',
+                    right: '0',
+                    top: 'calc(50vh - 250px )',
+                }}
+            >
+                <AddPixelControls
+                    firestore={firestore}
+                    getCanvasData={getCanvasData}
+                    mousePosition={mousePosition}
+                />
+            </div>
+        </>
     );
 }
 

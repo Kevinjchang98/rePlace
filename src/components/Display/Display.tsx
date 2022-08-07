@@ -37,7 +37,7 @@ function Display({
         return (
             <mesh position={[pixel.x, pixel.y, 0]} key={i}>
                 <planeBufferGeometry />
-                <meshStandardMaterial color={'#' + pixel.color} />
+                <meshStandardMaterial color={pixel.color} />
             </mesh>
         );
     });

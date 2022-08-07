@@ -7,14 +7,16 @@ interface AddPixelControlsProps {
     firestore: any; // TODO: Update firestore type
     getCanvasData: Function;
     mousePosition: { x: number; y: number };
+    color: Color;
+    setColor: Function;
 }
 function AddPixelControls({
     firestore,
     getCanvasData,
     mousePosition,
+    color,
+    setColor,
 }: AddPixelControlsProps) {
-    const [color, setColor] = useColor('hex', '#121212'); // Color of pixel to be edited
-
     // Setter for canvas data
     const pushCanvasData = async (x: number, y: number, color: string) => {
         await setDoc(doc(firestore, 'pixels', String('x' + x + 'y' + y)), {
@@ -32,31 +34,20 @@ function AddPixelControls({
 
     return (
         <div>
-            {/* Temporary way to push data to database */}
-            <form>
-                <label>X coordinate: {mousePosition.x}</label>
-                <br />
-
-                <label>Y coordinate: {mousePosition.y}</label>
-                <br />
-
-                <label>
-                    Color in hex:
-                    <ColorPicker
-                        width={250}
-                        height={200}
-                        color={color}
-                        onChange={setColor}
-                        hideHSV
-                        dark
-                    />
-                </label>
-            </form>
-
+            Color:
+            <ColorPicker
+                width={250}
+                height={200}
+                color={color}
+                onChange={(newColor) => {
+                    setColor(newColor);
+                }}
+                hideHSV
+                dark
+            />
             <br />
             <button onClick={handleSubmit}>Submit</button>
             <br />
-
             <br />
             <button onClick={() => getCanvasData()}>Refresh</button>
         </div>

@@ -1,12 +1,14 @@
 import { Canvas } from '@react-three/fiber';
 import { MapControls } from '@react-three/drei';
 import { useEffect } from 'react';
+import { Color } from 'react-color-palette';
 
 interface CanvasProps {
     getCanvasData: Function;
     canvasData: Array<{ x: number; y: number; color: string }>;
     mousePosition: { x: number; y: number };
     setMousePosition: Function;
+    color: Color;
 }
 
 interface PixelData {
@@ -20,11 +22,12 @@ function Display({
     canvasData,
     mousePosition,
     setMousePosition,
+    color,
 }: CanvasProps) {
     const LAYER_OFFSET = 0.001; // Offset to resolve z-fighting
     const SELECTABLE_CANVAS_WIDTH = 1000; // Width of selectable canvas area
     const SELECTABLE_CANVAS_HEIGHT = 1000; // Height of selectable canvas
-    const INDICATOR_LINE_WIDTH = 0.05; // Thickness of selected pixel indicator outline
+    const INDICATOR_LINE_WIDTH = 0.1; // Thickness of selected pixel indicator outline
 
     // Refresh canvasData on page load
     useEffect(() => {
@@ -107,6 +110,17 @@ function Display({
             >
                 <planeBufferGeometry />
                 <meshStandardMaterial color={'black'} />
+            </mesh>
+            <mesh
+                position={[mousePosition.x, mousePosition.y, LAYER_OFFSET]}
+                scale={[
+                    1 - INDICATOR_LINE_WIDTH * 2,
+                    1 - INDICATOR_LINE_WIDTH * 2,
+                    1,
+                ]}
+            >
+                <planeBufferGeometry />
+                <meshStandardMaterial color={color.hex} />
             </mesh>
         </>
     );

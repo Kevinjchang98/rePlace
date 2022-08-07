@@ -21,8 +21,73 @@ function App() {
 
     // Refresh canvasData on page load
     useEffect(() => {
-        getCanvasData();
+        // getCanvasData();
+        getChunkData();
     }, []);
+
+    const getChunkData = async () => {
+        const chunkQuery = query(collection(firestore, 'chunks'));
+
+        const unsubscribe = await onSnapshot(chunkQuery, (snapshot) => {
+            snapshot.forEach((doc) => {
+                // console.log(doc.data());
+                Object.keys(doc.data()).forEach((item) => {
+                    // doc.id = x1y1 = chunk coordinates encoded string
+                    // console.log(doc.id);
+
+                    // chunk x coord
+                    // console.log(doc.id.substring(1, doc.id.search('y')));
+
+                    // chunk y coord
+                    // console.log(doc.id.substring(doc.id.search('y') + 1));
+
+                    // item = x42y42 = local coordinates encoded string
+                    // console.log(item);
+
+                    // local x coord
+                    // console.log(item.substring(1, item.search('y')));
+
+                    // local y coord
+                    // console.log(item.substring(item.search('y') + 1));
+
+                    // global x coord
+                    // console.log(
+                    //     parseInt(doc.id.substring(1, doc.id.search('y'))) * 64 +
+                    //         parseInt(item.substring(1, item.search('y')))
+                    // );
+
+                    // global y coord
+                    // console.log(
+                    //     parseInt(doc.id.substring(doc.id.search('y') + 1)) *
+                    //         64 +
+                    //         parseInt(item.substring(item.search('y') + 1))
+                    // );
+
+                    // doc.data()[item] = #00ff00
+                    // console.log(doc.data()[item]);
+
+                    setCanvasData((prevState: typeof canvasData) => [
+                        ...prevState,
+                        {
+                            x:
+                                parseInt(
+                                    doc.id.substring(1, doc.id.search('y'))
+                                ) *
+                                    64 +
+                                parseInt(item.substring(1, item.search('y'))),
+                            y:
+                                parseInt(
+                                    doc.id.substring(doc.id.search('y') + 1)
+                                ) *
+                                    64 +
+                                parseInt(item.substring(item.search('y') + 1)),
+                            color: doc.data()[item],
+                        },
+                    ]);
+                });
+            });
+        });
+    };
 
     // Getter for canvas data
     const getCanvasData = async () => {

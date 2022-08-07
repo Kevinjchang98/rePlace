@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useColor } from 'react-color-palette';
 import {
     collection,
@@ -25,8 +25,15 @@ function App() {
     // Canvas collection from firestore
     const canvasCollection = collection(firestore, 'pixels');
 
+    // Refresh canvasData on page load
+    useEffect(() => {
+        getCanvasData();
+    }, []);
+
     // Getter for canvas data
     const getCanvasData = async () => {
+        console.log('Getting new canvas data');
+
         const canvasQuery = query(canvasCollection);
         const querySnapshot = await getDocs(canvasQuery);
 

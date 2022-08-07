@@ -1,6 +1,5 @@
 import { Canvas } from '@react-three/fiber';
 import { MapControls } from '@react-three/drei';
-import { useEffect } from 'react';
 import { Color } from 'react-color-palette';
 
 interface CanvasProps {
@@ -28,11 +27,6 @@ function Display({
     const SELECTABLE_CANVAS_WIDTH = 1000; // Width of selectable canvas area
     const SELECTABLE_CANVAS_HEIGHT = 1000; // Height of selectable canvas
     const INDICATOR_LINE_WIDTH = 0.1; // Thickness of selected pixel indicator outline
-
-    // Refresh canvasData on page load
-    useEffect(() => {
-        getCanvasData();
-    }, []);
 
     // Takes in canvasData, which is an array of objects of type PixelData and
     // returns meshes that contain a singular plane of specified color

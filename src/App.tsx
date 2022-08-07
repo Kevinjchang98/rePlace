@@ -69,6 +69,8 @@ function App() {
                 <AddPixelControls
                     firestore={firestore}
                     getCanvasData={getCanvasData}
+                    canvasData={canvasData}
+                    setCanvasData={setCanvasData}
                     mousePosition={mousePosition}
                     color={color}
                     setColor={setColor}

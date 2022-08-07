@@ -1,11 +1,12 @@
-import { useState } from 'react';
 import { doc, setDoc } from 'firebase/firestore';
-import { Color, ColorPicker, useColor } from 'react-color-palette';
+import { Color, ColorPicker } from 'react-color-palette';
 import 'react-color-palette/lib/css/styles.css';
 
 interface AddPixelControlsProps {
     firestore: any; // TODO: Update firestore type
     getCanvasData: Function;
+    canvasData: Array<{ x: number; y: number; color: string }>;
+    setCanvasData: Function;
     mousePosition: { x: number; y: number };
     color: Color;
     setColor: Function;
@@ -13,6 +14,8 @@ interface AddPixelControlsProps {
 function AddPixelControls({
     firestore,
     getCanvasData,
+    canvasData,
+    setCanvasData,
     mousePosition,
     color,
     setColor,
@@ -29,6 +32,10 @@ function AddPixelControls({
     // Push data and also get updated data when form submits
     const handleSubmit = () => {
         pushCanvasData(mousePosition.x, mousePosition.y, color.hex);
+        setCanvasData((prevState: typeof canvasData) => [
+            ...prevState,
+            { x: mousePosition.x, y: mousePosition.y, color: color.hex },
+        ]);
         getCanvasData();
     };
 

@@ -1,12 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useColor } from 'react-color-palette';
-import {
-    collection,
-    DocumentData,
-    getDocs,
-    query,
-    QueryDocumentSnapshot,
-} from 'firebase/firestore';
+import { collection, onSnapshot, query } from 'firebase/firestore';
 import { firestore } from './firestore/firestore';
 import './App.css';
 import Display from './components/Display/Display';
@@ -20,7 +14,7 @@ function App() {
         x: number;
         y: number;
     }>({ x: 0, y: 0 });
-    const [color, setColor] = useColor('hex', '#121212'); // Color of pixel to be edited
+    const [color, setColor] = useColor('hex', '#ffffff'); // Color of pixel to be edited
 
     // Canvas collection from firestore
     const canvasCollection = collection(firestore, 'pixels');
@@ -32,31 +26,27 @@ function App() {
 
     // Getter for canvas data
     const getCanvasData = async () => {
-        console.log('Getting new canvas data');
-
         const canvasQuery = query(canvasCollection);
-        const querySnapshot = await getDocs(canvasQuery);
 
-        const result: QueryDocumentSnapshot<DocumentData>[] = [];
-
-        querySnapshot.forEach((snapshot) => {
-            result.push(snapshot);
+        // Get realtime updates
+        const unsubscribe = await onSnapshot(canvasQuery, (querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                setCanvasData((prevState: typeof canvasData) => [
+                    ...prevState,
+                    {
+                        x: doc.data().x,
+                        y: doc.data().y,
+                        color: doc.data().color,
+                    },
+                ]);
+            });
         });
-
-        setCanvasData(
-            result.map((pixel) => ({
-                x: pixel.data().x,
-                y: pixel.data().y,
-                color: pixel.data().color,
-            }))
-        );
     };
 
     return (
         <>
             <div className="App">
                 <Display
-                    getCanvasData={getCanvasData}
                     canvasData={canvasData}
                     mousePosition={mousePosition}
                     setMousePosition={setMousePosition}
@@ -75,9 +65,6 @@ function App() {
             >
                 <AddPixelControls
                     firestore={firestore}
-                    getCanvasData={getCanvasData}
-                    canvasData={canvasData}
-                    setCanvasData={setCanvasData}
                     mousePosition={mousePosition}
                     color={color}
                     setColor={setColor}

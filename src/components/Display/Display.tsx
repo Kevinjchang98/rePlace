@@ -3,7 +3,6 @@ import { MapControls } from '@react-three/drei';
 import { Color } from 'react-color-palette';
 
 interface CanvasProps {
-    getCanvasData: Function;
     canvasData: Array<{ x: number; y: number; color: string }>;
     mousePosition: { x: number; y: number };
     setMousePosition: Function;
@@ -17,7 +16,6 @@ interface PixelData {
 }
 
 function Display({
-    getCanvasData,
     canvasData,
     mousePosition,
     setMousePosition,

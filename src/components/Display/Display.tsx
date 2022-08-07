@@ -35,14 +35,11 @@ function Display({ getCanvasData, canvasData, setMousePosition }: CanvasProps) {
     return (
         // TODO: Refactor style into css module
         <div>
-            {/* Button to manually refresh canvas data */}
-            <button onClick={() => getCanvasData()}>Get Firebase data</button>
-
             {/* Container for three canvas */}
             <div
                 style={{
-                    width: '800px',
-                    height: '600px',
+                    width: '100vw',
+                    height: '70vh',
                     backgroundColor: 'white',
                 }}
             >
@@ -82,6 +79,9 @@ function Display({ getCanvasData, canvasData, setMousePosition }: CanvasProps) {
                     {pixels}
                 </Canvas>
             </div>
+
+            {/* Button to manually refresh canvas data */}
+            <button onClick={() => getCanvasData()}>Get Firebase data</button>
         </div>
     );
 }

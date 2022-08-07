@@ -45,19 +45,17 @@ function App() {
 
     return (
         <div className="App">
-            <div className="card">
-                <Display
-                    getCanvasData={getCanvasData}
-                    canvasData={canvasData}
-                    setMousePosition={setMousePosition}
-                />
+            <Display
+                getCanvasData={getCanvasData}
+                canvasData={canvasData}
+                setMousePosition={setMousePosition}
+            />
 
-                <AddPixelControls
-                    firestore={firestore}
-                    getCanvasData={getCanvasData}
-                    mousePosition={mousePosition}
-                />
-            </div>
+            <AddPixelControls
+                firestore={firestore}
+                getCanvasData={getCanvasData}
+                mousePosition={mousePosition}
+            />
         </div>
     );
 }

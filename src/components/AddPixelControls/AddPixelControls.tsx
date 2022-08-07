@@ -31,7 +31,7 @@ function AddPixelControls({
     };
 
     return (
-        <>
+        <div>
             {/* Temporary way to push data to database */}
             <form>
                 <label>X coordinate: {mousePosition.x}</label>
@@ -42,16 +42,9 @@ function AddPixelControls({
 
                 <label>
                     Color in hex:
-                    {/* <input
-                        type="text"
-                        value={color}
-                        onChange={(e) => {
-                            setColor(e.target.value);
-                        }}
-                    /> */}
                     <ColorPicker
-                        width={456}
-                        height={228}
+                        width={250}
+                        height={200}
                         color={color}
                         onChange={setColor}
                         hideHSV
@@ -61,8 +54,12 @@ function AddPixelControls({
             </form>
 
             <br />
-            <button onClick={handleSubmit}>Push Firebase data</button>
-        </>
+            <button onClick={handleSubmit}>Submit</button>
+            <br />
+
+            <br />
+            <button onClick={() => getCanvasData()}>Refresh</button>
+        </div>
     );
 }
 

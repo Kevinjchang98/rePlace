@@ -119,7 +119,7 @@ function Display({
             <div
                 style={{
                     width: '100vw',
-                    height: '70vh',
+                    height: '100vh',
                     backgroundColor: 'white',
                 }}
             >
@@ -149,9 +149,6 @@ function Display({
                     {pixels}
                 </Canvas>
             </div>
-
-            {/* Button to manually refresh canvas data */}
-            <button onClick={() => getCanvasData()}>Get Firebase data</button>
         </div>
     );
 }

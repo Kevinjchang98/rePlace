@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { doc, setDoc } from 'firebase/firestore';
-import { Color, ColorPicker, useColor } from "react-color-palette";
-import "react-color-palette/lib/css/styles.css";
+import { Color, ColorPicker, useColor } from 'react-color-palette';
+import 'react-color-palette/lib/css/styles.css';
 
 interface AddPixelControlsProps {
     firestore: any; // TODO: Update firestore type
     getCanvasData: Function;
+    mousePosition: { x: number; y: number };
 }
-
-function AddPixelControls({ firestore, getCanvasData }: AddPixelControlsProps) {
-    const [x, setX] = useState<number>(0); // X coordinate to be edited
-    const [y, setY] = useState<number>(0); // Y coordinate to be edited
-    const [color, setColor] = useColor("hex", "#121212"); // Color of pixel to be edited
+function AddPixelControls({
+    firestore,
+    getCanvasData,
+    mousePosition,
+}: AddPixelControlsProps) {
+    const [color, setColor] = useColor('hex', '#121212'); // Color of pixel to be edited
 
     // Setter for canvas data
     const pushCanvasData = async (x: number, y: number, color: string) => {
@@ -24,7 +26,7 @@ function AddPixelControls({ firestore, getCanvasData }: AddPixelControlsProps) {
 
     // Push data and also get updated data when form submits
     const handleSubmit = () => {
-        pushCanvasData(x, y, color.hex);
+        pushCanvasData(mousePosition.x, mousePosition.y, color.hex);
         getCanvasData();
     };
 
@@ -32,28 +34,10 @@ function AddPixelControls({ firestore, getCanvasData }: AddPixelControlsProps) {
         <>
             {/* Temporary way to push data to database */}
             <form>
-                <label>
-                    X coordinate:
-                    <input
-                        type="number"
-                        value={x}
-                        onChange={(e) => {
-                            setX(parseInt(e.target.value));
-                        }}
-                    />
-                </label>
+                <label>X coordinate: {mousePosition.x}</label>
                 <br />
 
-                <label>
-                    Y coordinate:
-                    <input
-                        type="number"
-                        value={y}
-                        onChange={(e) => {
-                            setY(parseInt(e.target.value));
-                        }}
-                    />
-                </label>
+                <label>Y coordinate: {mousePosition.y}</label>
                 <br />
 
                 <label>
@@ -65,7 +49,14 @@ function AddPixelControls({ firestore, getCanvasData }: AddPixelControlsProps) {
                             setColor(e.target.value);
                         }}
                     /> */}
-                    <ColorPicker width={456} height={228} color={color} onChange={setColor} hideHSV dark />
+                    <ColorPicker
+                        width={456}
+                        height={228}
+                        color={color}
+                        onChange={setColor}
+                        hideHSV
+                        dark
+                    />
                 </label>
             </form>
 

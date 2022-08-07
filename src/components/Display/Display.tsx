@@ -5,6 +5,8 @@ import { useEffect } from 'react';
 interface CanvasProps {
     getCanvasData: Function;
     canvasData: Array<{ x: number; y: number; color: string }>;
+    mousePosition: { x: number; y: number };
+    setMousePosition: Function;
 }
 
 interface PixelData {
@@ -13,8 +15,18 @@ interface PixelData {
     color: string;
 }
 
-function Display({ getCanvasData, canvasData }: CanvasProps) {
-    // Refresh canvas data on page load
+function Display({
+    getCanvasData,
+    canvasData,
+    mousePosition,
+    setMousePosition,
+}: CanvasProps) {
+    const LAYER_OFFSET = 0.001; // Offset to resolve z-fighting
+    const SELECTABLE_CANVAS_WIDTH = 1000; // Width of selectable canvas area
+    const SELECTABLE_CANVAS_HEIGHT = 1000; // Height of selectable canvas
+    const INDICATOR_LINE_WIDTH = 0.05; // Thickness of selected pixel indicator outline
+
+    // Refresh canvasData on page load
     useEffect(() => {
         getCanvasData();
     }, []);
@@ -30,18 +42,84 @@ function Display({ getCanvasData, canvasData }: CanvasProps) {
         );
     });
 
+    // Plane to allow for selecting of pixel by clicking the mouse
+    const mousePositionCapturePlane = (
+        <mesh
+            scale={[SELECTABLE_CANVAS_WIDTH, SELECTABLE_CANVAS_HEIGHT, 1]}
+            position={[0, 0, 0]}
+            onClick={(e) => {
+                let mousePos = {
+                    x: Math.round(e.point.x),
+                    y: Math.round(e.point.y),
+                };
+                setMousePosition(mousePos);
+            }}
+        >
+            <planeBufferGeometry />
+            <meshStandardMaterial visible={false} />
+        </mesh>
+    );
+
+    // Indicator of selected pixel
+    // TODO: Invert color if selected pixel is dark
+    const selectedPixelIndicator = (
+        <>
+            <mesh
+                position={[
+                    mousePosition.x - (0.5 - INDICATOR_LINE_WIDTH / 2),
+                    mousePosition.y,
+                    LAYER_OFFSET,
+                ]}
+                scale={[INDICATOR_LINE_WIDTH, 1, 1]}
+            >
+                <planeBufferGeometry />
+                <meshStandardMaterial color={'black'} />
+            </mesh>
+            <mesh
+                position={[
+                    mousePosition.x + (0.5 - INDICATOR_LINE_WIDTH / 2),
+                    mousePosition.y,
+                    LAYER_OFFSET,
+                ]}
+                scale={[INDICATOR_LINE_WIDTH, 1, 1]}
+            >
+                <planeBufferGeometry />
+                <meshStandardMaterial color={'black'} />
+            </mesh>
+            <mesh
+                position={[
+                    mousePosition.x,
+                    mousePosition.y - (0.5 - INDICATOR_LINE_WIDTH / 2),
+                    LAYER_OFFSET,
+                ]}
+                scale={[1, INDICATOR_LINE_WIDTH, 1]}
+            >
+                <planeBufferGeometry />
+                <meshStandardMaterial color={'black'} />
+            </mesh>
+            <mesh
+                position={[
+                    mousePosition.x,
+                    mousePosition.y + (0.5 - INDICATOR_LINE_WIDTH / 2),
+                    LAYER_OFFSET,
+                ]}
+                scale={[1, INDICATOR_LINE_WIDTH, 1]}
+            >
+                <planeBufferGeometry />
+                <meshStandardMaterial color={'black'} />
+            </mesh>
+        </>
+    );
+
     // What gets rendered on the main page
     return (
         // TODO: Refactor style into css module
         <div>
-            {/* Button to manually refresh canvas data */}
-            <button onClick={() => getCanvasData()}>Get Firebase data</button>
-
             {/* Container for three canvas */}
             <div
                 style={{
-                    width: '800px',
-                    height: '600px',
+                    width: '100vw',
+                    height: '70vh',
                     backgroundColor: 'white',
                 }}
             >
@@ -64,9 +142,16 @@ function Display({ getCanvasData, canvasData }: CanvasProps) {
 
                     <pointLight position={[100, 100, 100]} />
 
+                    {mousePositionCapturePlane}
+
+                    {selectedPixelIndicator}
+
                     {pixels}
                 </Canvas>
             </div>
+
+            {/* Button to manually refresh canvas data */}
+            <button onClick={() => getCanvasData()}>Get Firebase data</button>
         </div>
     );
 }

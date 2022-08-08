@@ -1,7 +1,7 @@
 import { Canvas } from '@react-three/fiber';
 import { MapControls } from '@react-three/drei';
 import { Color } from 'react-color-palette';
-import { PlaneBufferGeometry, DoubleSide } from 'three';
+import { PlaneBufferGeometry, DoubleSide, NoToneMapping } from 'three';
 import { useMemo } from 'react';
 
 interface CanvasProps {
@@ -146,6 +146,7 @@ function Display({
                     up: [0, 0, 1],
                     far: 10000,
                 }}
+                gl={{ toneMapping: NoToneMapping }}
             >
                 {/* TODO: Verify if there's a better way to resolve TS errors with these props */}
                 <MapControls

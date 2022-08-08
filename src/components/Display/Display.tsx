@@ -9,6 +9,7 @@ interface CanvasProps {
     mousePosition: { x: number; y: number };
     setMousePosition: Function;
     color: Color;
+    sizeModifier: number;
 }
 
 interface PixelData {
@@ -22,6 +23,7 @@ function Display({
     mousePosition,
     setMousePosition,
     color,
+    sizeModifier,
 }: CanvasProps) {
     const LAYER_OFFSET = 0.001; // Offset to resolve z-fighting
     const SELECTABLE_CANVAS_WIDTH = 1000; // Width of selectable canvas area
@@ -38,6 +40,7 @@ function Display({
                 position={[pixel.x, pixel.y, 0]}
                 key={i}
                 geometry={pixelGeometry}
+                scale={[sizeModifier, sizeModifier, sizeModifier]}
             >
                 <meshStandardMaterial side={DoubleSide} color={pixel.color} />
             </mesh>
@@ -47,12 +50,16 @@ function Display({
     // Plane to allow for selecting of pixel by clicking the mouse
     const mousePositionCapturePlane = (
         <mesh
-            scale={[SELECTABLE_CANVAS_WIDTH, SELECTABLE_CANVAS_HEIGHT, 1]}
+            scale={[
+                SELECTABLE_CANVAS_WIDTH * sizeModifier,
+                SELECTABLE_CANVAS_HEIGHT * sizeModifier,
+                1,
+            ]}
             position={[0, 0, 0]}
             onClick={(e) => {
                 let mousePos = {
-                    x: Math.round(e.point.x),
-                    y: Math.round(e.point.y),
+                    x: Math.round((e.point.x * 1) / sizeModifier),
+                    y: Math.round((e.point.y * 1) / sizeModifier),
                 };
                 setMousePosition(mousePos);
             }}
@@ -69,44 +76,64 @@ function Display({
             {/* Outline */}
             <mesh
                 position={[
-                    mousePosition.x - (0.5 - INDICATOR_LINE_WIDTH / 2),
-                    mousePosition.y,
+                    (mousePosition.x - (0.5 - INDICATOR_LINE_WIDTH / 2)) *
+                        sizeModifier,
+                    mousePosition.y * sizeModifier,
                     LAYER_OFFSET,
                 ]}
-                scale={[INDICATOR_LINE_WIDTH, 1, 1]}
+                scale={[
+                    INDICATOR_LINE_WIDTH * sizeModifier,
+                    1 * sizeModifier,
+                    1,
+                ]}
             >
                 <planeBufferGeometry />
                 <meshStandardMaterial side={DoubleSide} color={'black'} />
             </mesh>
             <mesh
                 position={[
-                    mousePosition.x + (0.5 - INDICATOR_LINE_WIDTH / 2),
-                    mousePosition.y,
+                    (mousePosition.x + (0.5 - INDICATOR_LINE_WIDTH / 2)) *
+                        sizeModifier,
+                    mousePosition.y * sizeModifier,
                     LAYER_OFFSET,
                 ]}
-                scale={[INDICATOR_LINE_WIDTH, 1, 1]}
+                scale={[
+                    INDICATOR_LINE_WIDTH * sizeModifier,
+                    1 * sizeModifier,
+                    1,
+                ]}
             >
                 <planeBufferGeometry />
                 <meshStandardMaterial side={DoubleSide} color={'black'} />
             </mesh>
             <mesh
                 position={[
-                    mousePosition.x,
-                    mousePosition.y - (0.5 - INDICATOR_LINE_WIDTH / 2),
+                    mousePosition.x * sizeModifier,
+                    (mousePosition.y - (0.5 - INDICATOR_LINE_WIDTH / 2)) *
+                        sizeModifier,
                     LAYER_OFFSET,
                 ]}
-                scale={[1, INDICATOR_LINE_WIDTH, 1]}
+                scale={[
+                    1 * sizeModifier,
+                    INDICATOR_LINE_WIDTH * sizeModifier,
+                    1,
+                ]}
             >
                 <planeBufferGeometry />
                 <meshStandardMaterial side={DoubleSide} color={'black'} />
             </mesh>
             <mesh
                 position={[
-                    mousePosition.x,
-                    mousePosition.y + (0.5 - INDICATOR_LINE_WIDTH / 2),
+                    mousePosition.x * sizeModifier,
+                    (mousePosition.y + (0.5 - INDICATOR_LINE_WIDTH / 2)) *
+                        sizeModifier,
                     LAYER_OFFSET,
                 ]}
-                scale={[1, INDICATOR_LINE_WIDTH, 1]}
+                scale={[
+                    1 * sizeModifier,
+                    INDICATOR_LINE_WIDTH * sizeModifier,
+                    1,
+                ]}
             >
                 <planeBufferGeometry />
                 <meshStandardMaterial side={DoubleSide} color={'black'} />
@@ -114,10 +141,14 @@ function Display({
 
             {/* Color indicator */}
             <mesh
-                position={[mousePosition.x, mousePosition.y, LAYER_OFFSET]}
+                position={[
+                    mousePosition.x * sizeModifier,
+                    mousePosition.y * sizeModifier,
+                    LAYER_OFFSET,
+                ]}
                 scale={[
-                    1 - INDICATOR_LINE_WIDTH * 3,
-                    1 - INDICATOR_LINE_WIDTH * 3,
+                    (1 - INDICATOR_LINE_WIDTH * 3) * sizeModifier,
+                    (1 - INDICATOR_LINE_WIDTH * 3) * sizeModifier,
                     1,
                 ]}
             >

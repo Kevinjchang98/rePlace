@@ -7,6 +7,7 @@ import Display from './components/Display/Display';
 import AddPixelControls from './components/AddPixelControls/AddPixelControls';
 
 const CHUNK_SIZE = 64;
+const SIZE_MODIFIER = 0.25;
 
 function App() {
     const [canvasData, setCanvasData] = useState<
@@ -121,27 +122,33 @@ function App() {
                     setCanvasData((prevState: typeof canvasData) => {
                         const newPixel = {
                             x:
-                                parseInt(
+                                (parseInt(
                                     doc.id.substring(1, doc.id.search('y'))
                                 ) *
                                     CHUNK_SIZE +
-                                parseInt(item.substring(1, item.search('y'))) +
-                                (parseInt(
-                                    doc.id.substring(1, doc.id.search('y'))
-                                ) < 0
-                                    ? CHUNK_SIZE
-                                    : 0),
+                                    parseInt(
+                                        item.substring(1, item.search('y'))
+                                    ) +
+                                    (parseInt(
+                                        doc.id.substring(1, doc.id.search('y'))
+                                    ) < 0
+                                        ? CHUNK_SIZE
+                                        : 0)) *
+                                SIZE_MODIFIER,
                             y:
-                                parseInt(
+                                (parseInt(
                                     doc.id.substring(doc.id.search('y') + 1)
                                 ) *
                                     CHUNK_SIZE +
-                                parseInt(item.substring(item.search('y') + 1)) +
-                                (parseInt(
-                                    doc.id.substring(doc.id.search('y') + 1)
-                                ) < 0
-                                    ? CHUNK_SIZE
-                                    : 0),
+                                    parseInt(
+                                        item.substring(item.search('y') + 1)
+                                    ) +
+                                    (parseInt(
+                                        doc.id.substring(doc.id.search('y') + 1)
+                                    ) < 0
+                                        ? CHUNK_SIZE
+                                        : 0)) *
+                                SIZE_MODIFIER,
                             color: doc.data()[item],
                         };
 
@@ -172,6 +179,7 @@ function App() {
                     mousePosition={mousePosition}
                     setMousePosition={setMousePosition}
                     color={color}
+                    sizeModifier={SIZE_MODIFIER}
                 />
             </div>
 

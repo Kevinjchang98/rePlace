@@ -130,42 +130,39 @@ function Display({
     // What gets rendered on the main page
     return (
         // TODO: Refactor style into css module
-        <div>
-            {/* Container for three canvas */}
-            <div
-                style={{
-                    width: '100vw',
-                    height: '100vh',
-                    backgroundColor: 'white',
+        <div
+            style={{
+                width: '100vw',
+                height: '100vh',
+                backgroundColor: 'white',
+            }}
+        >
+            <Canvas
+                frameloop="demand"
+                orthographic={true}
+                camera={{
+                    position: [0, 0, 50],
+                    zoom: 10,
+                    up: [0, 0, 1],
+                    far: 10000,
                 }}
             >
-                <Canvas
-                    frameloop="demand"
-                    orthographic={true}
-                    camera={{
-                        position: [0, 0, 50],
-                        zoom: 10,
-                        up: [0, 0, 1],
-                        far: 10000,
-                    }}
-                >
-                    {/* TODO: Verify if there's a better way to resolve TS errors with these props */}
-                    <MapControls
-                        addEventListener={undefined}
-                        hasEventListener={undefined}
-                        removeEventListener={undefined}
-                        dispatchEvent={undefined}
-                    />
+                {/* TODO: Verify if there's a better way to resolve TS errors with these props */}
+                <MapControls
+                    addEventListener={undefined}
+                    hasEventListener={undefined}
+                    removeEventListener={undefined}
+                    dispatchEvent={undefined}
+                />
 
-                    <ambientLight />
+                <ambientLight />
 
-                    {mousePositionCapturePlane}
+                {mousePositionCapturePlane}
 
-                    {selectedPixelIndicator}
+                {selectedPixelIndicator}
 
-                    {pixels}
-                </Canvas>
-            </div>
+                {pixels}
+            </Canvas>
         </div>
     );
 }

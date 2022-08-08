@@ -17,7 +17,7 @@ function AddPixelControls({
     color,
     setColor,
 }: AddPixelControlsProps) {
-    const [isHidden, setIsHidden] = useState<boolean>(false);
+    const [isHidden, setIsHidden] = useState<boolean>(true);
 
     const pushChunkData = async (x: number, y: number, color: string) => {
         const newData: any = {};

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { StrictMode, useEffect, useState } from 'react';
 import { useColor } from 'react-color-palette';
 import { collection, onSnapshot, query } from 'firebase/firestore';
 import { firestore } from './firestore/firestore';
@@ -18,22 +18,23 @@ function App() {
     }>({ x: 0, y: 0 });
     const [color, setColor] = useColor('hex', '#ffffff'); // Color of pixel to be edited
 
-    // Canvas collection from firestore
-    const canvasCollection = collection(firestore, 'pixels');
-
     // Refresh canvasData on page load
     useEffect(() => {
         // getCanvasData();
         getChunkData();
     }, []);
 
+    useEffect(() => {
+        console.log(canvasData.length);
+    }, [canvasData]);
+
     const getChunkData = async () => {
         const chunkQuery = query(collection(firestore, 'chunks'));
 
         const unsubscribe = await onSnapshot(chunkQuery, (snapshot) => {
-            snapshot.forEach((doc) => {
+            snapshot.docChanges().forEach((change) => {
                 // console.log(doc.data());
-                Object.keys(doc.data()).forEach((item) => {
+                Object.keys(change.doc.data()).forEach((item) => {
                     // doc.id = x1y1 = chunk coordinates encoded string
                     // console.log(doc.id);
 
@@ -97,27 +98,37 @@ function App() {
                         {
                             x:
                                 parseInt(
-                                    doc.id.substring(1, doc.id.search('y'))
+                                    change.doc.id.substring(
+                                        1,
+                                        change.doc.id.search('y')
+                                    )
                                 ) *
                                     CHUNK_SIZE +
                                 parseInt(item.substring(1, item.search('y'))) +
                                 (parseInt(
-                                    doc.id.substring(1, doc.id.search('y'))
+                                    change.doc.id.substring(
+                                        1,
+                                        change.doc.id.search('y')
+                                    )
                                 ) < 0
                                     ? CHUNK_SIZE
                                     : 0),
                             y:
                                 parseInt(
-                                    doc.id.substring(doc.id.search('y') + 1)
+                                    change.doc.id.substring(
+                                        change.doc.id.search('y') + 1
+                                    )
                                 ) *
                                     CHUNK_SIZE +
                                 parseInt(item.substring(item.search('y') + 1)) +
                                 (parseInt(
-                                    doc.id.substring(doc.id.search('y') + 1)
+                                    change.doc.id.substring(
+                                        change.doc.id.search('y') + 1
+                                    )
                                 ) < 0
                                     ? CHUNK_SIZE
                                     : 0),
-                            color: doc.data()[item],
+                            color: change.doc.data()[item],
                         },
                     ]);
                 });
@@ -125,27 +136,8 @@ function App() {
         });
     };
 
-    // Getter for canvas data
-    const getCanvasData = async () => {
-        const canvasQuery = query(canvasCollection);
-
-        // Get realtime updates
-        const unsubscribe = await onSnapshot(canvasQuery, (querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                setCanvasData((prevState: typeof canvasData) => [
-                    ...prevState,
-                    {
-                        x: doc.data().x,
-                        y: doc.data().y,
-                        color: doc.data().color,
-                    },
-                ]);
-            });
-        });
-    };
-
     return (
-        <>
+        <StrictMode>
             <div className="App">
                 <Display
                     canvasData={canvasData}
@@ -172,7 +164,7 @@ function App() {
                     setColor={setColor}
                 />
             </div>
-        </>
+        </StrictMode>
     );
 }
 

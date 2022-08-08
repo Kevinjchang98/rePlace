@@ -1,7 +1,8 @@
 import { Canvas } from '@react-three/fiber';
 import { MapControls } from '@react-three/drei';
 import { Color } from 'react-color-palette';
-import * as THREE from 'three';
+import { PlaneBufferGeometry, DoubleSide, NoToneMapping } from 'three';
+import { useMemo } from 'react';
 
 interface CanvasProps {
     canvasData: Array<{ x: number; y: number; color: string }>;
@@ -27,7 +28,7 @@ function Display({
     const SELECTABLE_CANVAS_HEIGHT = 1000; // Height of selectable canvas
     const INDICATOR_LINE_WIDTH = 0.1; // Thickness of selected pixel indicator outline
 
-    const pixelGeometry = new THREE.PlaneBufferGeometry();
+    const pixelGeometry = useMemo(() => new PlaneBufferGeometry(), []);
 
     // Takes in canvasData, which is an array of objects of type PixelData and
     // returns meshes that contain a singular plane of specified color
@@ -38,7 +39,7 @@ function Display({
                 key={i}
                 geometry={pixelGeometry}
             >
-                <meshStandardMaterial color={pixel.color} />
+                <meshStandardMaterial side={DoubleSide} color={pixel.color} />
             </mesh>
         );
     });
@@ -57,7 +58,7 @@ function Display({
             }}
         >
             <planeBufferGeometry />
-            <meshStandardMaterial visible={false} />
+            <meshStandardMaterial side={DoubleSide} visible={false} />
         </mesh>
     );
 
@@ -75,7 +76,7 @@ function Display({
                 scale={[INDICATOR_LINE_WIDTH, 1, 1]}
             >
                 <planeBufferGeometry />
-                <meshStandardMaterial color={'black'} />
+                <meshStandardMaterial side={DoubleSide} color={'black'} />
             </mesh>
             <mesh
                 position={[
@@ -86,7 +87,7 @@ function Display({
                 scale={[INDICATOR_LINE_WIDTH, 1, 1]}
             >
                 <planeBufferGeometry />
-                <meshStandardMaterial color={'black'} />
+                <meshStandardMaterial side={DoubleSide} color={'black'} />
             </mesh>
             <mesh
                 position={[
@@ -97,7 +98,7 @@ function Display({
                 scale={[1, INDICATOR_LINE_WIDTH, 1]}
             >
                 <planeBufferGeometry />
-                <meshStandardMaterial color={'black'} />
+                <meshStandardMaterial side={DoubleSide} color={'black'} />
             </mesh>
             <mesh
                 position={[
@@ -108,7 +109,7 @@ function Display({
                 scale={[1, INDICATOR_LINE_WIDTH, 1]}
             >
                 <planeBufferGeometry />
-                <meshStandardMaterial color={'black'} />
+                <meshStandardMaterial side={DoubleSide} color={'black'} />
             </mesh>
 
             {/* Color indicator */}
@@ -121,7 +122,7 @@ function Display({
                 ]}
             >
                 <circleBufferGeometry args={[0.3, 32]} />
-                <meshStandardMaterial color={color.hex} />
+                <meshStandardMaterial side={DoubleSide} color={color.hex} />
             </mesh>
         </>
     );
@@ -129,42 +130,40 @@ function Display({
     // What gets rendered on the main page
     return (
         // TODO: Refactor style into css module
-        <div>
-            {/* Container for three canvas */}
-            <div
-                style={{
-                    width: '100vw',
-                    height: '100vh',
-                    backgroundColor: 'white',
+        <div
+            style={{
+                width: '100vw',
+                height: '100vh',
+                backgroundColor: 'white',
+            }}
+        >
+            <Canvas
+                frameloop="demand"
+                orthographic={true}
+                camera={{
+                    position: [0, 0, 50],
+                    zoom: 10,
+                    up: [0, 0, 1],
+                    far: 10000,
                 }}
+                gl={{ toneMapping: NoToneMapping }}
             >
-                <Canvas
-                    frameloop="demand"
-                    orthographic={true}
-                    camera={{
-                        position: [0, 0, 50],
-                        zoom: 10,
-                        up: [0, 0, 1],
-                        far: 10000,
-                    }}
-                >
-                    {/* TODO: Verify if there's a better way to resolve TS errors with these props */}
-                    <MapControls
-                        addEventListener={undefined}
-                        hasEventListener={undefined}
-                        removeEventListener={undefined}
-                        dispatchEvent={undefined}
-                    />
+                {/* TODO: Verify if there's a better way to resolve TS errors with these props */}
+                <MapControls
+                    addEventListener={undefined}
+                    hasEventListener={undefined}
+                    removeEventListener={undefined}
+                    dispatchEvent={undefined}
+                />
 
-                    <ambientLight />
+                <ambientLight />
 
-                    {mousePositionCapturePlane}
+                {mousePositionCapturePlane}
 
-                    {selectedPixelIndicator}
+                {selectedPixelIndicator}
 
-                    {pixels}
-                </Canvas>
-            </div>
+                {pixels}
+            </Canvas>
         </div>
     );
 }

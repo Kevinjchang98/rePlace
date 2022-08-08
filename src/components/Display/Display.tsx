@@ -58,8 +58,8 @@ function Display({
             position={[0, 0, 0]}
             onClick={(e) => {
                 let mousePos = {
-                    x: Math.round((e.point.x * 1) / sizeModifier),
-                    y: Math.round((e.point.y * 1) / sizeModifier),
+                    x: Math.round(e.point.x / sizeModifier),
+                    y: Math.round(e.point.y / sizeModifier),
                 };
                 setMousePosition(mousePos);
             }}
@@ -81,11 +81,7 @@ function Display({
                     mousePosition.y * sizeModifier,
                     LAYER_OFFSET,
                 ]}
-                scale={[
-                    INDICATOR_LINE_WIDTH * sizeModifier,
-                    1 * sizeModifier,
-                    1,
-                ]}
+                scale={[INDICATOR_LINE_WIDTH * sizeModifier, sizeModifier, 1]}
             >
                 <planeBufferGeometry />
                 <meshStandardMaterial side={DoubleSide} color={'black'} />
@@ -97,11 +93,7 @@ function Display({
                     mousePosition.y * sizeModifier,
                     LAYER_OFFSET,
                 ]}
-                scale={[
-                    INDICATOR_LINE_WIDTH * sizeModifier,
-                    1 * sizeModifier,
-                    1,
-                ]}
+                scale={[INDICATOR_LINE_WIDTH * sizeModifier, sizeModifier, 1]}
             >
                 <planeBufferGeometry />
                 <meshStandardMaterial side={DoubleSide} color={'black'} />
@@ -113,11 +105,7 @@ function Display({
                         sizeModifier,
                     LAYER_OFFSET,
                 ]}
-                scale={[
-                    1 * sizeModifier,
-                    INDICATOR_LINE_WIDTH * sizeModifier,
-                    1,
-                ]}
+                scale={[sizeModifier, INDICATOR_LINE_WIDTH * sizeModifier, 1]}
             >
                 <planeBufferGeometry />
                 <meshStandardMaterial side={DoubleSide} color={'black'} />
@@ -129,11 +117,7 @@ function Display({
                         sizeModifier,
                     LAYER_OFFSET,
                 ]}
-                scale={[
-                    1 * sizeModifier,
-                    INDICATOR_LINE_WIDTH * sizeModifier,
-                    1,
-                ]}
+                scale={[sizeModifier, INDICATOR_LINE_WIDTH * sizeModifier, 1]}
             >
                 <planeBufferGeometry />
                 <meshStandardMaterial side={DoubleSide} color={'black'} />

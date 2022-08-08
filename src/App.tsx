@@ -24,10 +24,6 @@ function App() {
         getChunkData();
     }, []);
 
-    useEffect(() => {
-        console.log(canvasData.length);
-    }, [canvasData]);
-
     const getChunkData = async () => {
         const chunkQuery = query(collection(firestore, 'chunks'));
 

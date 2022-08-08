@@ -24,13 +24,17 @@ function App() {
         getChunkData();
     }, []);
 
+    useEffect(() => {
+        console.log(canvasData.length);
+    }, [canvasData]);
+
     const getChunkData = async () => {
         const chunkQuery = query(collection(firestore, 'chunks'));
 
         const unsubscribe = await onSnapshot(chunkQuery, (snapshot) => {
-            snapshot.forEach((doc) => {
+            snapshot.docChanges().forEach((change) => {
                 // console.log(doc.data());
-                Object.keys(doc.data()).forEach((item) => {
+                Object.keys(change.doc.data()).forEach((item) => {
                     // doc.id = x1y1 = chunk coordinates encoded string
                     // console.log(doc.id);
 
@@ -94,27 +98,37 @@ function App() {
                         {
                             x:
                                 parseInt(
-                                    doc.id.substring(1, doc.id.search('y'))
+                                    change.doc.id.substring(
+                                        1,
+                                        change.doc.id.search('y')
+                                    )
                                 ) *
                                     CHUNK_SIZE +
                                 parseInt(item.substring(1, item.search('y'))) +
                                 (parseInt(
-                                    doc.id.substring(1, doc.id.search('y'))
+                                    change.doc.id.substring(
+                                        1,
+                                        change.doc.id.search('y')
+                                    )
                                 ) < 0
                                     ? CHUNK_SIZE
                                     : 0),
                             y:
                                 parseInt(
-                                    doc.id.substring(doc.id.search('y') + 1)
+                                    change.doc.id.substring(
+                                        change.doc.id.search('y') + 1
+                                    )
                                 ) *
                                     CHUNK_SIZE +
                                 parseInt(item.substring(item.search('y') + 1)) +
                                 (parseInt(
-                                    doc.id.substring(doc.id.search('y') + 1)
+                                    change.doc.id.substring(
+                                        change.doc.id.search('y') + 1
+                                    )
                                 ) < 0
                                     ? CHUNK_SIZE
                                     : 0),
-                            color: doc.data()[item],
+                            color: change.doc.data()[item],
                         },
                     ]);
                 });

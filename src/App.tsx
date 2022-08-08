@@ -17,24 +17,49 @@ function App() {
         y: number;
     }>({ x: 0, y: 0 });
     const [color, setColor] = useColor('hex', '#ffffff'); // Color of pixel to be edited
+    const [isInitialLoad, setIsInitialLoad] = useState<boolean>(true);
 
     // Refresh canvasData on page load
     useEffect(() => {
         // getCanvasData();
         getChunkData();
+        // removeDuplicates();
     }, []);
 
-    useEffect(() => {
-        console.log(canvasData.length);
-    }, [canvasData]);
+    // Removes duplicate pixels from canvasData
+    // const removeDuplicates = async () => {
+    //     setCanvasData(
+    //         canvasData.filter(
+    //             (A, index) =>
+    //                 index ===
+    //                 canvasData.findIndex((B) => B.x === A.x && B.y === A.y)
+    //         )
+    //     );
+    //     console.log('Canvas data length' + canvasData.length);
+    // };
 
     const getChunkData = async () => {
         const chunkQuery = query(collection(firestore, 'chunks'));
 
         const unsubscribe = await onSnapshot(chunkQuery, (snapshot) => {
-            snapshot.docChanges().forEach((change) => {
-                // console.log(doc.data());
-                Object.keys(change.doc.data()).forEach((item) => {
+            setCanvasData([]);
+
+            snapshot.forEach((doc) => {
+                // console.log(
+                //     change.doc.data()[
+                //         Object.keys(change.doc.data())[
+                //             Object.keys(change.doc.data()).length - 1
+                //         ]
+                //     ]
+                // );
+
+                // console.log(
+                //     Object.keys(change.doc.data())[
+                //         Object.keys(change.doc.data()).length - 1
+                //     ]
+                // );
+
+                Object.keys(doc.data()).forEach((item) => {
                     // doc.id = x1y1 = chunk coordinates encoded string
                     // console.log(doc.id);
 
@@ -93,44 +118,47 @@ function App() {
                     // doc.data()[item] = #00ff00
                     // console.log(doc.data()[item]);
 
-                    setCanvasData((prevState: typeof canvasData) => [
-                        ...prevState,
-                        {
+                    setCanvasData((prevState: typeof canvasData) => {
+                        const newPixel = {
                             x:
                                 parseInt(
-                                    change.doc.id.substring(
-                                        1,
-                                        change.doc.id.search('y')
-                                    )
+                                    doc.id.substring(1, doc.id.search('y'))
                                 ) *
                                     CHUNK_SIZE +
                                 parseInt(item.substring(1, item.search('y'))) +
                                 (parseInt(
-                                    change.doc.id.substring(
-                                        1,
-                                        change.doc.id.search('y')
-                                    )
+                                    doc.id.substring(1, doc.id.search('y'))
                                 ) < 0
                                     ? CHUNK_SIZE
                                     : 0),
                             y:
                                 parseInt(
-                                    change.doc.id.substring(
-                                        change.doc.id.search('y') + 1
-                                    )
+                                    doc.id.substring(doc.id.search('y') + 1)
                                 ) *
                                     CHUNK_SIZE +
                                 parseInt(item.substring(item.search('y') + 1)) +
                                 (parseInt(
-                                    change.doc.id.substring(
-                                        change.doc.id.search('y') + 1
-                                    )
+                                    doc.id.substring(doc.id.search('y') + 1)
                                 ) < 0
                                     ? CHUNK_SIZE
                                     : 0),
-                            color: change.doc.data()[item],
-                        },
-                    ]);
+                            color: doc.data()[item],
+                        };
+
+                        // for (let i = 0; i < prevState.length; i++) {
+                        //     if (
+                        //         prevState[i].x == newPixel.x &&
+                        //         prevState[i].y == newPixel.y
+                        //     ) {
+                        //         console.log(newPixel.x);
+                        //     }
+                        // }
+
+                        // console.log(...filteredState);
+                        // console.log(canvasData.length);
+
+                        return [...prevState, newPixel];
+                    });
                 });
             });
         });
@@ -162,6 +190,7 @@ function App() {
                     mousePosition={mousePosition}
                     color={color}
                     setColor={setColor}
+                    canvasDataLength={canvasData.length}
                 />
             </div>
         </StrictMode>

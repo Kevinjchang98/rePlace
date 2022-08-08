@@ -5,6 +5,7 @@ import { firestore } from './firestore/firestore';
 import './App.css';
 import Display from './components/Display/Display';
 import AddPixelControls from './components/AddPixelControls/AddPixelControls';
+import CurrentPosition from './components/CurrentPosition/CurrentPosition';
 
 const CHUNK_SIZE = 64;
 
@@ -191,6 +192,23 @@ function App() {
                     color={color}
                     setColor={setColor}
                     canvasDataLength={canvasData.length}
+                />
+            </div>
+
+            <div
+                style={{
+                    width: '150px',
+                    position: 'absolute',
+                    background: '#888',
+                    top: '5%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    borderRadius: '10%',
+                    opacity: '0.6',
+                }}
+            >
+                <CurrentPosition
+                    mousePosition={mousePosition}
                 />
             </div>
         </StrictMode>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { StrictMode, useEffect, useState } from 'react';
 import { useColor } from 'react-color-palette';
 import { collection, onSnapshot, query } from 'firebase/firestore';
 import { firestore } from './firestore/firestore';
@@ -18,9 +18,6 @@ function App() {
     }>({ x: 0, y: 0 });
     const [color, setColor] = useColor('hex', '#ffffff'); // Color of pixel to be edited
 
-    // Canvas collection from firestore
-    const canvasCollection = collection(firestore, 'pixels');
-
     // Refresh canvasData on page load
     useEffect(() => {
         // getCanvasData();
@@ -31,6 +28,7 @@ function App() {
         const chunkQuery = query(collection(firestore, 'chunks'));
 
         const unsubscribe = await onSnapshot(chunkQuery, (snapshot) => {
+            console.log('New connection created');
             snapshot.forEach((doc) => {
                 // console.log(doc.data());
                 Object.keys(doc.data()).forEach((item) => {
@@ -125,27 +123,8 @@ function App() {
         });
     };
 
-    // Getter for canvas data
-    const getCanvasData = async () => {
-        const canvasQuery = query(canvasCollection);
-
-        // Get realtime updates
-        const unsubscribe = await onSnapshot(canvasQuery, (querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                setCanvasData((prevState: typeof canvasData) => [
-                    ...prevState,
-                    {
-                        x: doc.data().x,
-                        y: doc.data().y,
-                        color: doc.data().color,
-                    },
-                ]);
-            });
-        });
-    };
-
     return (
-        <>
+        <StrictMode>
             <div className="App">
                 <Display
                     canvasData={canvasData}
@@ -172,7 +151,7 @@ function App() {
                     setColor={setColor}
                 />
             </div>
-        </>
+        </StrictMode>
     );
 }
 

@@ -1,4 +1,5 @@
 import { doc, setDoc, updateDoc } from 'firebase/firestore';
+import { useState } from 'react';
 import { Color, ColorPicker } from 'react-color-palette';
 import 'react-color-palette/lib/css/styles.css';
 
@@ -16,6 +17,8 @@ function AddPixelControls({
     color,
     setColor,
 }: AddPixelControlsProps) {
+    const [isHidden, setIsHidden] = useState<boolean>(false);
+
     const pushChunkData = async (x: number, y: number, color: string) => {
         const newData: any = {};
 
@@ -55,25 +58,40 @@ function AddPixelControls({
 
     return (
         <div>
-            Color:
-            <ColorPicker
-                width={250}
-                height={200}
-                color={color}
-                onChange={(newColor) => {
-                    setColor(newColor);
-                }}
-                hideHSV
-                dark
-            />
-            <br />
             <button
                 onClick={() => {
-                    pushChunkData(mousePosition.x, mousePosition.y, color.hex);
+                    setIsHidden(!isHidden);
                 }}
             >
-                Submit
+                {isHidden ? '+' : '-'}
             </button>
+            {isHidden ? null : (
+                <div>
+                    Color:
+                    <ColorPicker
+                        width={250}
+                        height={200}
+                        color={color}
+                        onChange={(newColor) => {
+                            setColor(newColor);
+                        }}
+                        hideHSV
+                        dark
+                    />
+                    <br />
+                    <button
+                        onClick={() => {
+                            pushChunkData(
+                                mousePosition.x,
+                                mousePosition.y,
+                                color.hex
+                            );
+                        }}
+                    >
+                        Submit
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

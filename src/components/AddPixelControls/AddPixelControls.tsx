@@ -9,7 +9,7 @@ interface AddPixelControlsProps {
     mousePosition: { x: number; y: number };
     color: Color;
     setColor: Function;
-    cull: Function;
+    canvasDataLength: number;
 }
 function AddPixelControls({
     firestore,
@@ -17,7 +17,7 @@ function AddPixelControls({
     mousePosition,
     color,
     setColor,
-    cull,
+    canvasDataLength,
 }: AddPixelControlsProps) {
     const [isHidden, setIsHidden] = useState<boolean>(true);
 
@@ -92,13 +92,7 @@ function AddPixelControls({
                     >
                         Submit
                     </button>
-                    <button
-                        onClick={() => {
-                            cull();
-                        }}
-                    >
-                        Reduce lag
-                    </button>
+                    <p>Total pixels drawn: {canvasDataLength}</p>
                 </div>
             )}
         </div>

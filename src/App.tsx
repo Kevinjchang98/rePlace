@@ -23,26 +23,28 @@ function App() {
     useEffect(() => {
         // getCanvasData();
         getChunkData();
-        removeDuplicates();
+        // removeDuplicates();
     }, []);
 
     // Removes duplicate pixels from canvasData
-    const removeDuplicates = async () => {
-        setCanvasData(
-            canvasData.filter(
-                (A, index) =>
-                    index ===
-                    canvasData.findIndex((B) => B.x === A.x && B.y === A.y)
-            )
-        );
-        console.log('Canvas data length' + canvasData.length);
-    };
+    // const removeDuplicates = async () => {
+    //     setCanvasData(
+    //         canvasData.filter(
+    //             (A, index) =>
+    //                 index ===
+    //                 canvasData.findIndex((B) => B.x === A.x && B.y === A.y)
+    //         )
+    //     );
+    //     console.log('Canvas data length' + canvasData.length);
+    // };
 
     const getChunkData = async () => {
         const chunkQuery = query(collection(firestore, 'chunks'));
 
         const unsubscribe = await onSnapshot(chunkQuery, (snapshot) => {
-            snapshot.docChanges().forEach((change) => {
+            setCanvasData([]);
+
+            snapshot.forEach((doc) => {
                 // console.log(
                 //     change.doc.data()[
                 //         Object.keys(change.doc.data())[
@@ -57,7 +59,7 @@ function App() {
                 //     ]
                 // );
 
-                Object.keys(change.doc.data()).forEach((item) => {
+                Object.keys(doc.data()).forEach((item) => {
                     // doc.id = x1y1 = chunk coordinates encoded string
                     // console.log(doc.id);
 
@@ -120,37 +122,27 @@ function App() {
                         const newPixel = {
                             x:
                                 parseInt(
-                                    change.doc.id.substring(
-                                        1,
-                                        change.doc.id.search('y')
-                                    )
+                                    doc.id.substring(1, doc.id.search('y'))
                                 ) *
                                     CHUNK_SIZE +
                                 parseInt(item.substring(1, item.search('y'))) +
                                 (parseInt(
-                                    change.doc.id.substring(
-                                        1,
-                                        change.doc.id.search('y')
-                                    )
+                                    doc.id.substring(1, doc.id.search('y'))
                                 ) < 0
                                     ? CHUNK_SIZE
                                     : 0),
                             y:
                                 parseInt(
-                                    change.doc.id.substring(
-                                        change.doc.id.search('y') + 1
-                                    )
+                                    doc.id.substring(doc.id.search('y') + 1)
                                 ) *
                                     CHUNK_SIZE +
                                 parseInt(item.substring(item.search('y') + 1)) +
                                 (parseInt(
-                                    change.doc.id.substring(
-                                        change.doc.id.search('y') + 1
-                                    )
+                                    doc.id.substring(doc.id.search('y') + 1)
                                 ) < 0
                                     ? CHUNK_SIZE
                                     : 0),
-                            color: change.doc.data()[item],
+                            color: doc.data()[item],
                         };
 
                         // for (let i = 0; i < prevState.length; i++) {
@@ -198,7 +190,7 @@ function App() {
                     mousePosition={mousePosition}
                     color={color}
                     setColor={setColor}
-                    cull={removeDuplicates}
+                    canvasDataLength={canvasData.length}
                 />
             </div>
         </StrictMode>

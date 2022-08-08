@@ -17,6 +17,7 @@ function App() {
         y: number;
     }>({ x: 0, y: 0 });
     const [color, setColor] = useColor('hex', '#ffffff'); // Color of pixel to be edited
+    const [isInitialLoad, setIsInitialLoad] = useState<boolean>(true);
 
     // Refresh canvasData on page load
     useEffect(() => {
@@ -24,12 +25,37 @@ function App() {
         getChunkData();
     }, []);
 
+    // Removes duplicate pixels from canvasData
+    const removeDuplicates = async () => {
+        setCanvasData(
+            canvasData.filter(
+                (A, index) =>
+                    index ===
+                    canvasData.findIndex((B) => B.x === A.x && B.y === A.y)
+            )
+        );
+        console.log('Canvas data length' + canvasData.length);
+    };
+
     const getChunkData = async () => {
         const chunkQuery = query(collection(firestore, 'chunks'));
 
         const unsubscribe = await onSnapshot(chunkQuery, (snapshot) => {
             snapshot.docChanges().forEach((change) => {
-                // console.log(doc.data());
+                // console.log(
+                //     change.doc.data()[
+                //         Object.keys(change.doc.data())[
+                //             Object.keys(change.doc.data()).length - 1
+                //         ]
+                //     ]
+                // );
+
+                // console.log(
+                //     Object.keys(change.doc.data())[
+                //         Object.keys(change.doc.data()).length - 1
+                //     ]
+                // );
+
                 Object.keys(change.doc.data()).forEach((item) => {
                     // doc.id = x1y1 = chunk coordinates encoded string
                     // console.log(doc.id);
@@ -89,9 +115,8 @@ function App() {
                     // doc.data()[item] = #00ff00
                     // console.log(doc.data()[item]);
 
-                    setCanvasData((prevState: typeof canvasData) => [
-                        ...prevState,
-                        {
+                    setCanvasData((prevState: typeof canvasData) => {
+                        const newPixel = {
                             x:
                                 parseInt(
                                     change.doc.id.substring(
@@ -125,8 +150,22 @@ function App() {
                                     ? CHUNK_SIZE
                                     : 0),
                             color: change.doc.data()[item],
-                        },
-                    ]);
+                        };
+
+                        // for (let i = 0; i < prevState.length; i++) {
+                        //     if (
+                        //         prevState[i].x == newPixel.x &&
+                        //         prevState[i].y == newPixel.y
+                        //     ) {
+                        //         console.log(newPixel.x);
+                        //     }
+                        // }
+
+                        // console.log(...filteredState);
+                        // console.log(canvasData.length);
+
+                        return [...prevState, newPixel];
+                    });
                 });
             });
         });
@@ -158,6 +197,7 @@ function App() {
                     mousePosition={mousePosition}
                     color={color}
                     setColor={setColor}
+                    cull={removeDuplicates}
                 />
             </div>
         </StrictMode>

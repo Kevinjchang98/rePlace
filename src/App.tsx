@@ -28,7 +28,6 @@ function App() {
         const chunkQuery = query(collection(firestore, 'chunks'));
 
         const unsubscribe = await onSnapshot(chunkQuery, (snapshot) => {
-            console.log('New connection created');
             snapshot.forEach((doc) => {
                 // console.log(doc.data());
                 Object.keys(doc.data()).forEach((item) => {

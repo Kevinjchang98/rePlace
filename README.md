@@ -1,5 +1,6 @@
 # rePlace
-
+## What is it?
+Inspired by Reddit's r/place, this uses [React Three Fiber](https://github.com/pmndrs/react-three-fiber) to draw a 3D editable canvas, and a [Firebase](https://firebase.google.com/) database to allow for realtime updates
 ## Running
 
 Use `npm install` to install all dependencies, then `npm run dev` to start local development server

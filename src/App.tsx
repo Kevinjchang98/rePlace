@@ -23,6 +23,7 @@ function App() {
     useEffect(() => {
         // getCanvasData();
         getChunkData();
+        removeDuplicates();
     }, []);
 
     // Removes duplicate pixels from canvasData

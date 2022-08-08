@@ -18,7 +18,6 @@ function App() {
         y: number;
     }>({ x: 0, y: 0 });
     const [color, setColor] = useColor('hex', '#ffffff'); // Color of pixel to be edited
-    const [isInitialLoad, setIsInitialLoad] = useState<boolean>(true);
 
     // Refresh canvasData on page load
     useEffect(() => {

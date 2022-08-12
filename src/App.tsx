@@ -1,16 +1,22 @@
 import { StrictMode, useEffect, useState } from 'react';
 import { useColor } from 'react-color-palette';
 import { collection, onSnapshot, query } from 'firebase/firestore';
-import { firestore } from './firestore/firestore';
+import { firestore, firebase } from './firebase/firebase';
+import { StyledFirebaseAuth } from 'react-firebaseui';
+import 'firebase/compat/auth';
 import './App.css';
 import Display from './components/Display/Display';
 import AddPixelControls from './components/AddPixelControls/AddPixelControls';
 import CurrentPosition from './components/CurrentPosition/CurrentPosition';
+import Profile from './components/Profile/Profile';
 
 const CHUNK_SIZE = 64; // Number of pixels stored as one document in Firestore
 const SIZE_MODIFIER = 0.25; // Multiplies size of all three.js objects by this
 
 function App() {
+    // If user is signed in
+    const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
+
     // State of canvas
     const [canvasData, setCanvasData] = useState<
         Array<{ x: number; y: number; color: string }>
@@ -97,7 +103,7 @@ function App() {
     };
 
     return (
-        <StrictMode>
+        <>
             <div className="App">
                 <Display
                     canvasData={canvasData}
@@ -105,6 +111,20 @@ function App() {
                     setSelectedPosition={setSelectedPosition}
                     color={color}
                     sizeModifier={SIZE_MODIFIER}
+                />
+            </div>
+
+            <div
+                style={{
+                    position: 'absolute',
+                    right: '0',
+                    top: '0',
+                }}
+            >
+                <Profile
+                    isSignedIn={isSignedIn}
+                    firebase={firebase}
+                    setIsSignedIn={setIsSignedIn}
                 />
             </div>
 
@@ -141,7 +161,7 @@ function App() {
             >
                 <CurrentPosition mousePosition={selectedPosition} />
             </div>
-        </StrictMode>
+        </>
     );
 }
 

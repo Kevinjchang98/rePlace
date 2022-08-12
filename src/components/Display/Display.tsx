@@ -27,13 +27,13 @@ function Display({
     sizeModifier,
 }: CanvasProps) {
     const LAYER_OFFSET = 0.001; // Offset to resolve z-fighting
-    const SELECTABLE_CANVAS_WIDTH = 1000; // Width of selectable canvas area
-    const SELECTABLE_CANVAS_HEIGHT = 1000; // Height of selectable canvas
+    const SELECTABLE_CANVAS_WIDTH = 500; // Width of selectable canvas area
+    const SELECTABLE_CANVAS_HEIGHT = 500; // Height of selectable canvas
     const INDICATOR_LINE_WIDTH = 0.1; // Thickness of selected pixel indicator outline
 
-    const controlsRef = useRef<any>();
+    const controlsRef = useRef<any>(); // Ref to MapControls
 
-    const pixelGeometry = useMemo(() => new PlaneBufferGeometry(), []);
+    const pixelGeometry = useMemo(() => new PlaneBufferGeometry(), []); // Pixel geo
 
     // Takes in canvasData, which is an array of objects of type PixelData and
     // returns meshes that contain a singular plane of specified color

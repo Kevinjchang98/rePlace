@@ -1,7 +1,7 @@
-import { initializeApp } from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import { getFirestore } from 'firebase/firestore';
 
-initializeApp({
+firebase.initializeApp({
     apiKey: import.meta.env.VITE_VERCEL_FIREBASE_API_KEY,
     authDomain: import.meta.env.VITE_VERCEL_FIREBASE_AUTH_DOMAIN,
     projectId: import.meta.env.VITE_VERCEL_FIREBASE_PROJECT_ID,
@@ -13,4 +13,4 @@ initializeApp({
 
 const firestore = getFirestore();
 
-export { firestore };
+export { firestore, firebase };

@@ -1,8 +1,7 @@
-import { StrictMode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useColor } from 'react-color-palette';
 import { collection, onSnapshot, query } from 'firebase/firestore';
 import { firestore, firebase } from './firebase/firebase';
-import { StyledFirebaseAuth } from 'react-firebaseui';
 import 'firebase/compat/auth';
 import './App.css';
 import Display from './components/Display/Display';

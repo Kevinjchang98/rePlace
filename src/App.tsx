@@ -7,167 +7,92 @@ import Display from './components/Display/Display';
 import AddPixelControls from './components/AddPixelControls/AddPixelControls';
 import CurrentPosition from './components/CurrentPosition/CurrentPosition';
 
-const CHUNK_SIZE = 64;
-const SIZE_MODIFIER = 0.25;
+const CHUNK_SIZE = 64; // Number of pixels stored as one document in Firestore
+const SIZE_MODIFIER = 0.25; // Multiplies size of all three.js objects by this
 
 function App() {
+    // State of canvas
     const [canvasData, setCanvasData] = useState<
         Array<{ x: number; y: number; color: string }>
-    >([]); // State of canvas
-    const [mousePosition, setMousePosition] = useState<{
+    >([]);
+
+    // Currently selected pixel; pixel to be edited
+    const [selectedPosition, setSelectedPosition] = useState<{
         x: number;
         y: number;
     }>({ x: 0, y: 0 });
-    const [color, setColor] = useColor('hex', '#ffffff'); // Color of pixel to be edited
+
+    // Color of pixel to be edited
+    const [color, setColor] = useColor('hex', '#ffffff');
 
     // Refresh canvasData on page load
     useEffect(() => {
-        // getCanvasData();
         getChunkData();
-        // removeDuplicates();
     }, []);
 
-    // Removes duplicate pixels from canvasData
-    // const removeDuplicates = async () => {
-    //     setCanvasData(
-    //         canvasData.filter(
-    //             (A, index) =>
-    //                 index ===
-    //                 canvasData.findIndex((B) => B.x === A.x && B.y === A.y)
-    //         )
-    //     );
-    //     console.log('Canvas data length' + canvasData.length);
-    // };
-
+    // Connect to Firestore
     const getChunkData = async () => {
+        // Query the chunks collection
         const chunkQuery = query(collection(firestore, 'chunks'));
 
+        // Establish realtime connection
         const unsubscribe = await onSnapshot(chunkQuery, (snapshot) => {
+            // Clear old canvas Data
             setCanvasData([]);
 
-            snapshot.forEach((doc) => {
-                // console.log(
-                //     change.doc.data()[
-                //         Object.keys(change.doc.data())[
-                //             Object.keys(change.doc.data()).length - 1
-                //         ]
-                //     ]
-                // );
+            // Create array to store new canvasData
+            let newCanvasData: typeof canvasData = [];
 
-                // console.log(
-                //     Object.keys(change.doc.data())[
-                //         Object.keys(change.doc.data()).length - 1
-                //     ]
-                // );
+            // Add new canvas data
+            snapshot.forEach((chunk) => {
+                // For each chunk
 
-                Object.keys(doc.data()).forEach((item) => {
-                    // doc.id = x1y1 = chunk coordinates encoded string
-                    // console.log(doc.id);
+                Object.keys(chunk.data()).forEach((pixel) => {
+                    // For each pixel
 
-                    // chunk x coord
-                    // console.log(doc.id.substring(1, doc.id.search('y')));
-
-                    // chunk y coord
-                    // console.log(doc.id.substring(doc.id.search('y') + 1));
-
-                    // item = x42y42 = local coordinates encoded string
-                    // console.log(item);
-
-                    // local x coord
-                    // console.log(item.substring(1, item.search('y')));
-
-                    // local y coord
-                    // console.log(item.substring(item.search('y') + 1));
-
-                    // global x coord
-                    // console.log(
-                    //     parseInt(doc.id.substring(1, doc.id.search('y'))) * 64 +
-                    //         parseInt(item.substring(1, item.search('y')))
-                    // );
-
-                    // global y coord
-                    // console.log(
-                    //     parseInt(doc.id.substring(doc.id.search('y') + 1)) *
-                    //         64 +
-                    //         parseInt(item.substring(item.search('y') + 1))
-                    // );
-
-                    // global x coord but +64 if negative x chunk coord
-                    // parseInt(
-                    //     doc.id.substring(1, doc.id.search('y'))
-                    // ) *
-                    //     64 +
-                    // parseInt(item.substring(1, item.search('y'))) +
-                    // (parseInt(
-                    //     doc.id.substring(1, doc.id.search('y'))
-                    // ) < 0
-                    //     ? 64
-                    //     : 0)
-
-                    // global y coord but +64 if negative y chunk coord
-                    // parseInt(
-                    //     doc.id.substring(doc.id.search('y') + 1)
-                    // ) *
-                    //     64 +
-                    // parseInt(item.substring(item.search('y') + 1)) +
-                    // (parseInt(
-                    //     doc.id.substring(doc.id.search('y') + 1)
-                    // ) < 0
-                    //     ? 64
-                    //     : 0)
-
-                    // doc.data()[item] = #00ff00
-                    // console.log(doc.data()[item]);
-
-                    setCanvasData((prevState: typeof canvasData) => {
-                        const newPixel = {
-                            x:
+                    // setCanvasData((prevState: typeof canvasData) => {
+                    const newPixel = {
+                        // x = x_chunk * CHUNK_SIZE + x_local * CHUNK_SIZE
+                        // if x_local < 0, add another CHUNK_SIZE
+                        // then multiply result by SIZE_MODIFIER
+                        x:
+                            (parseInt(
+                                chunk.id.substring(1, chunk.id.search('y'))
+                            ) *
+                                CHUNK_SIZE +
+                                parseInt(
+                                    pixel.substring(1, pixel.search('y'))
+                                ) +
                                 (parseInt(
-                                    doc.id.substring(1, doc.id.search('y'))
-                                ) *
-                                    CHUNK_SIZE +
-                                    parseInt(
-                                        item.substring(1, item.search('y'))
-                                    ) +
-                                    (parseInt(
-                                        doc.id.substring(1, doc.id.search('y'))
-                                    ) < 0
-                                        ? CHUNK_SIZE
-                                        : 0)) *
-                                SIZE_MODIFIER,
-                            y:
+                                    chunk.id.substring(1, chunk.id.search('y'))
+                                ) < 0
+                                    ? CHUNK_SIZE
+                                    : 0)) *
+                            SIZE_MODIFIER,
+                        y:
+                            (parseInt(
+                                chunk.id.substring(chunk.id.search('y') + 1)
+                            ) *
+                                CHUNK_SIZE +
+                                parseInt(
+                                    pixel.substring(pixel.search('y') + 1)
+                                ) +
                                 (parseInt(
-                                    doc.id.substring(doc.id.search('y') + 1)
-                                ) *
-                                    CHUNK_SIZE +
-                                    parseInt(
-                                        item.substring(item.search('y') + 1)
-                                    ) +
-                                    (parseInt(
-                                        doc.id.substring(doc.id.search('y') + 1)
-                                    ) < 0
-                                        ? CHUNK_SIZE
-                                        : 0)) *
-                                SIZE_MODIFIER,
-                            color: doc.data()[item],
-                        };
+                                    chunk.id.substring(chunk.id.search('y') + 1)
+                                ) < 0
+                                    ? CHUNK_SIZE
+                                    : 0)) *
+                            SIZE_MODIFIER,
+                        color: chunk.data()[pixel],
+                    };
 
-                        // for (let i = 0; i < prevState.length; i++) {
-                        //     if (
-                        //         prevState[i].x == newPixel.x &&
-                        //         prevState[i].y == newPixel.y
-                        //     ) {
-                        //         console.log(newPixel.x);
-                        //     }
-                        // }
-
-                        // console.log(...filteredState);
-                        // console.log(canvasData.length);
-
-                        return [...prevState, newPixel];
-                    });
+                    // Add to newCanvasData
+                    newCanvasData.push(newPixel);
                 });
             });
+
+            // Update canvasData
+            setCanvasData(newCanvasData);
         });
     };
 
@@ -176,8 +101,8 @@ function App() {
             <div className="App">
                 <Display
                     canvasData={canvasData}
-                    mousePosition={mousePosition}
-                    setMousePosition={setMousePosition}
+                    selectedPosition={selectedPosition}
+                    setSelectedPosition={setSelectedPosition}
                     color={color}
                     sizeModifier={SIZE_MODIFIER}
                 />
@@ -195,7 +120,7 @@ function App() {
                 <AddPixelControls
                     firestore={firestore}
                     CHUNK_SIZE={CHUNK_SIZE}
-                    mousePosition={mousePosition}
+                    mousePosition={selectedPosition}
                     color={color}
                     setColor={setColor}
                     canvasDataLength={canvasData.length}
@@ -214,9 +139,7 @@ function App() {
                     opacity: '0.6',
                 }}
             >
-                <CurrentPosition
-                    mousePosition={mousePosition}
-                />
+                <CurrentPosition mousePosition={selectedPosition} />
             </div>
         </StrictMode>
     );

@@ -3,11 +3,12 @@ import { Color } from 'react-color-palette';
 import { PlaneBufferGeometry, DoubleSide, NoToneMapping } from 'three';
 import { useMemo, useRef } from 'react';
 import { MapControls } from '@react-three/drei';
+import useEventListener from '../../hooks/useEventListener';
 
 interface CanvasProps {
     canvasData: Array<{ x: number; y: number; color: string }>;
-    mousePosition: { x: number; y: number };
-    setMousePosition: Function;
+    selectedPosition: { x: number; y: number };
+    setSelectedPosition: Function;
     color: Color;
     sizeModifier: number;
 }
@@ -20,19 +21,19 @@ interface PixelData {
 
 function Display({
     canvasData,
-    mousePosition,
-    setMousePosition,
+    selectedPosition,
+    setSelectedPosition,
     color,
     sizeModifier,
 }: CanvasProps) {
     const LAYER_OFFSET = 0.001; // Offset to resolve z-fighting
-    const SELECTABLE_CANVAS_WIDTH = 1000; // Width of selectable canvas area
-    const SELECTABLE_CANVAS_HEIGHT = 1000; // Height of selectable canvas
+    const SELECTABLE_CANVAS_WIDTH = 500; // Width of selectable canvas area
+    const SELECTABLE_CANVAS_HEIGHT = 500; // Height of selectable canvas
     const INDICATOR_LINE_WIDTH = 0.1; // Thickness of selected pixel indicator outline
 
-    const controlsRef = useRef<any>();
+    const controlsRef = useRef<any>(); // Ref to MapControls
 
-    const pixelGeometry = useMemo(() => new PlaneBufferGeometry(), []);
+    const pixelGeometry = useMemo(() => new PlaneBufferGeometry(), []); // Pixel geo
 
     // Takes in canvasData, which is an array of objects of type PixelData and
     // returns meshes that contain a singular plane of specified color
@@ -63,7 +64,7 @@ function Display({
                     x: Math.round(e.point.x / sizeModifier),
                     y: Math.round(e.point.y / sizeModifier),
                 };
-                setMousePosition(mousePos);
+                setSelectedPosition(mousePos);
             }}
         >
             <planeBufferGeometry />
@@ -78,9 +79,9 @@ function Display({
             {/* Outline */}
             <mesh
                 position={[
-                    (mousePosition.x - (0.5 - INDICATOR_LINE_WIDTH / 2)) *
+                    (selectedPosition.x - (0.5 - INDICATOR_LINE_WIDTH / 2)) *
                         sizeModifier,
-                    mousePosition.y * sizeModifier,
+                    selectedPosition.y * sizeModifier,
                     LAYER_OFFSET,
                 ]}
                 scale={[INDICATOR_LINE_WIDTH * sizeModifier, sizeModifier, 1]}
@@ -90,9 +91,9 @@ function Display({
             </mesh>
             <mesh
                 position={[
-                    (mousePosition.x + (0.5 - INDICATOR_LINE_WIDTH / 2)) *
+                    (selectedPosition.x + (0.5 - INDICATOR_LINE_WIDTH / 2)) *
                         sizeModifier,
-                    mousePosition.y * sizeModifier,
+                    selectedPosition.y * sizeModifier,
                     LAYER_OFFSET,
                 ]}
                 scale={[INDICATOR_LINE_WIDTH * sizeModifier, sizeModifier, 1]}
@@ -102,8 +103,8 @@ function Display({
             </mesh>
             <mesh
                 position={[
-                    mousePosition.x * sizeModifier,
-                    (mousePosition.y - (0.5 - INDICATOR_LINE_WIDTH / 2)) *
+                    selectedPosition.x * sizeModifier,
+                    (selectedPosition.y - (0.5 - INDICATOR_LINE_WIDTH / 2)) *
                         sizeModifier,
                     LAYER_OFFSET,
                 ]}
@@ -114,8 +115,8 @@ function Display({
             </mesh>
             <mesh
                 position={[
-                    mousePosition.x * sizeModifier,
-                    (mousePosition.y + (0.5 - INDICATOR_LINE_WIDTH / 2)) *
+                    selectedPosition.x * sizeModifier,
+                    (selectedPosition.y + (0.5 - INDICATOR_LINE_WIDTH / 2)) *
                         sizeModifier,
                     LAYER_OFFSET,
                 ]}
@@ -128,8 +129,8 @@ function Display({
             {/* Color indicator */}
             <mesh
                 position={[
-                    mousePosition.x * sizeModifier,
-                    mousePosition.y * sizeModifier,
+                    selectedPosition.x * sizeModifier,
+                    selectedPosition.y * sizeModifier,
                     LAYER_OFFSET,
                 ]}
                 scale={[
@@ -143,6 +144,11 @@ function Display({
             </mesh>
         </>
     );
+
+    // Capture keypresses
+    useEventListener('keydown', ({ key }: { key: string }) => {
+        console.log(key);
+    });
 
     // What gets rendered on the main page
     return (

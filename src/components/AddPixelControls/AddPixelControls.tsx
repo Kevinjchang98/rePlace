@@ -10,6 +10,7 @@ interface AddPixelControlsProps {
     color: Color;
     setColor: Function;
     canvasDataLength: number;
+    uid: string | undefined;
 }
 function AddPixelControls({
     firestore,
@@ -18,13 +19,17 @@ function AddPixelControls({
     color,
     setColor,
     canvasDataLength,
+    uid,
 }: AddPixelControlsProps) {
     const [isHidden, setIsHidden] = useState<boolean>(true);
 
     const pushChunkData = async (x: number, y: number, color: string) => {
         const newData: any = {};
 
-        newData[`x${x % CHUNK_SIZE}y${y % CHUNK_SIZE}`] = color;
+        newData[`x${x % CHUNK_SIZE}y${y % CHUNK_SIZE}`] =
+            color + (uid ? `!${uid}` : '');
+
+        console.log(newData);
 
         // Format chunk id string (e.g. x12y24)
         const newChunkId = String(
@@ -41,6 +46,7 @@ function AddPixelControls({
 
     return (
         <div>
+            {uid}
             <button
                 onClick={() => {
                     setIsHidden(!isHidden);

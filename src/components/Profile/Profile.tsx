@@ -30,10 +30,6 @@ function Profile({ firebase, isSignedIn, setIsSignedIn }: ProfileProps) {
         return () => unregisterAuthObserver(); // Make sure we un-register Firebase observers when the component unmounts.
     }, []);
 
-    useEffect(() => {
-        console.log(isSignedIn);
-    }, [isSignedIn]);
-
     return !isSignedIn ? (
         <StyledFirebaseAuth
             uiConfig={uiConfig}

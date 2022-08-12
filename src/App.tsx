@@ -15,6 +15,7 @@ const SIZE_MODIFIER = 0.25; // Multiplies size of all three.js objects by this
 function App() {
     // If user is signed in
     const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
+    const [uid, setUid] = useState<string>();
 
     // State of canvas
     const [canvasData, setCanvasData] = useState<
@@ -34,6 +35,11 @@ function App() {
     useEffect(() => {
         getChunkData();
     }, []);
+
+    // Update uid
+    useEffect(() => {
+        setUid(firebase?.auth()?.currentUser?.uid);
+    }, [isSignedIn]);
 
     // Connect to Firestore
     const getChunkData = async () => {
@@ -88,7 +94,21 @@ function App() {
                                     ? CHUNK_SIZE
                                     : 0)) *
                             SIZE_MODIFIER,
-                        color: chunk.data()[pixel],
+                        color: chunk.data()[pixel].includes('!')
+                            ? chunk
+                                  .data()
+                                  [pixel].substring(
+                                      0,
+                                      chunk.data()[pixel].indexOf('!')
+                                  )
+                            : chunk.data()[pixel],
+
+                        // chunk
+                        //     .data()
+                        //     [pixel].substring(
+                        //         0,
+                        //         chunk.data()[pixel].indexOf('!')
+                        //     ),
                     };
 
                     // Add to newCanvasData
@@ -143,6 +163,7 @@ function App() {
                     color={color}
                     setColor={setColor}
                     canvasDataLength={canvasData.length}
+                    uid={uid}
                 />
             </div>
 

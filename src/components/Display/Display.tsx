@@ -1,8 +1,8 @@
 import { Canvas } from '@react-three/fiber';
-import { MapControls } from '@react-three/drei';
 import { Color } from 'react-color-palette';
 import { PlaneBufferGeometry, DoubleSide, NoToneMapping } from 'three';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
+import { MapControls } from '@react-three/drei';
 
 interface CanvasProps {
     canvasData: Array<{ x: number; y: number; color: string }>;
@@ -29,6 +29,8 @@ function Display({
     const SELECTABLE_CANVAS_WIDTH = 1000; // Width of selectable canvas area
     const SELECTABLE_CANVAS_HEIGHT = 1000; // Height of selectable canvas
     const INDICATOR_LINE_WIDTH = 0.1; // Thickness of selected pixel indicator outline
+
+    const controlsRef = useRef<any>();
 
     const pixelGeometry = useMemo(() => new PlaneBufferGeometry(), []);
 
@@ -145,41 +147,64 @@ function Display({
     // What gets rendered on the main page
     return (
         // TODO: Refactor style into css module
-        <div
-            style={{
-                width: '100vw',
-                height: '100vh',
-                backgroundColor: 'white',
-            }}
-        >
-            <Canvas
-                frameloop="demand"
-                orthographic={true}
-                camera={{
-                    position: [0, 0, 50],
-                    zoom: 10,
-                    up: [0, 0, 1],
-                    far: 10000,
+        <>
+            <div
+                style={{
+                    width: '50px',
+                    position: 'absolute',
+                    bottom: '10px',
+                    left: '10px',
+                    zIndex: '1',
                 }}
-                gl={{ toneMapping: NoToneMapping }}
             >
-                {/* TODO: Verify if there's a better way to resolve TS errors with these props */}
-                <MapControls
-                    addEventListener={undefined}
-                    hasEventListener={undefined}
-                    removeEventListener={undefined}
-                    dispatchEvent={undefined}
-                />
+                <button
+                    onClick={() => {
+                        if (controlsRef.current) {
+                            controlsRef.current.reset();
+                        }
+                    }}
+                >
+                    Reset
+                </button>
+            </div>
 
-                <ambientLight />
+            <div
+                style={{
+                    width: '100vw',
+                    height: '100vh',
+                    backgroundColor: 'white',
+                }}
+            >
+                <Canvas
+                    frameloop="demand"
+                    orthographic={true}
+                    camera={{
+                        position: [0, 0, 50],
+                        zoom: 10,
+                        up: [0, 0, 1],
+                        far: 10000,
+                    }}
+                    gl={{ toneMapping: NoToneMapping }}
+                >
+                    {/* TODO: Verify if there's a better way to resolve TS errors with these props */}
+                    <MapControls
+                        addEventListener={undefined}
+                        hasEventListener={undefined}
+                        removeEventListener={undefined}
+                        dispatchEvent={undefined}
+                        ref={controlsRef}
+                    />
 
-                {mousePositionCapturePlane}
+                    <ambientLight />
 
-                {selectedPixelIndicator}
+                    {mousePositionCapturePlane}
 
-                {pixels}
-            </Canvas>
-        </div>
+                    {selectedPixelIndicator}
+
+                    {pixels}
+                </Canvas>
+            </div>
+        </>
     );
 }
 

@@ -19,7 +19,7 @@ function App() {
 
     // State of canvas
     const [canvasData, setCanvasData] = useState<
-        Array<{ x: number; y: number; color: string }>
+        Array<{ x: number; y: number; color: string; uid: string }>
     >([]);
 
     // Currently selected pixel; pixel to be edited
@@ -94,6 +94,9 @@ function App() {
                                     ? CHUNK_SIZE
                                     : 0)) *
                             SIZE_MODIFIER,
+                        // Decode color and uid from chunk.data()[pixel] which
+                        // has format #112233!abcd if color is #112233 and uid
+                        // is abcd or #112233 if no uid
                         color: chunk.data()[pixel].includes('!')
                             ? chunk
                                   .data()
@@ -102,13 +105,15 @@ function App() {
                                       chunk.data()[pixel].indexOf('!')
                                   )
                             : chunk.data()[pixel],
-
-                        // chunk
-                        //     .data()
-                        //     [pixel].substring(
-                        //         0,
-                        //         chunk.data()[pixel].indexOf('!')
-                        //     ),
+                        // If uid exists, set it otherwise set to Anonymous
+                        uid: chunk.data()[pixel].includes('!')
+                            ? chunk
+                                  .data()
+                                  [pixel].substring(
+                                      chunk.data()[pixel].indexOf('!') + 1,
+                                      chunk.data()[pixel].length
+                                  )
+                            : 'Anonymous',
                     };
 
                     // Add to newCanvasData

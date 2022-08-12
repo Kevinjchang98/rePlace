@@ -26,10 +26,9 @@ function AddPixelControls({
     const pushChunkData = async (x: number, y: number, color: string) => {
         const newData: any = {};
 
+        // Append uid with ! delimiter if it exists, otherwise only include hex
         newData[`x${x % CHUNK_SIZE}y${y % CHUNK_SIZE}`] =
             color + (uid ? `!${uid}` : '');
-
-        console.log(newData);
 
         // Format chunk id string (e.g. x12y24)
         const newChunkId = String(
@@ -46,7 +45,6 @@ function AddPixelControls({
 
     return (
         <div>
-            {uid}
             <button
                 onClick={() => {
                     setIsHidden(!isHidden);

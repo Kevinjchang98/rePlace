@@ -61,7 +61,6 @@ function App() {
                 Object.keys(chunk.data()).forEach((pixel) => {
                     // For each pixel
 
-                    // setCanvasData((prevState: typeof canvasData) => {
                     const newPixel = {
                         // x = x_chunk * CHUNK_SIZE + x_local * CHUNK_SIZE
                         // if x_local < 0, add another CHUNK_SIZE

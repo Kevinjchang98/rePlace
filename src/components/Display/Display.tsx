@@ -7,8 +7,8 @@ import useEventListener from '../../hooks/useEventListener';
 
 interface CanvasProps {
     canvasData: Array<{ x: number; y: number; color: string }>;
-    mousePosition: { x: number; y: number };
-    setMousePosition: Function;
+    selectedPosition: { x: number; y: number };
+    setSelectedPosition: Function;
     color: Color;
     sizeModifier: number;
 }
@@ -21,8 +21,8 @@ interface PixelData {
 
 function Display({
     canvasData,
-    mousePosition,
-    setMousePosition,
+    selectedPosition,
+    setSelectedPosition,
     color,
     sizeModifier,
 }: CanvasProps) {
@@ -64,7 +64,7 @@ function Display({
                     x: Math.round(e.point.x / sizeModifier),
                     y: Math.round(e.point.y / sizeModifier),
                 };
-                setMousePosition(mousePos);
+                setSelectedPosition(mousePos);
             }}
         >
             <planeBufferGeometry />
@@ -79,9 +79,9 @@ function Display({
             {/* Outline */}
             <mesh
                 position={[
-                    (mousePosition.x - (0.5 - INDICATOR_LINE_WIDTH / 2)) *
+                    (selectedPosition.x - (0.5 - INDICATOR_LINE_WIDTH / 2)) *
                         sizeModifier,
-                    mousePosition.y * sizeModifier,
+                    selectedPosition.y * sizeModifier,
                     LAYER_OFFSET,
                 ]}
                 scale={[INDICATOR_LINE_WIDTH * sizeModifier, sizeModifier, 1]}
@@ -91,9 +91,9 @@ function Display({
             </mesh>
             <mesh
                 position={[
-                    (mousePosition.x + (0.5 - INDICATOR_LINE_WIDTH / 2)) *
+                    (selectedPosition.x + (0.5 - INDICATOR_LINE_WIDTH / 2)) *
                         sizeModifier,
-                    mousePosition.y * sizeModifier,
+                    selectedPosition.y * sizeModifier,
                     LAYER_OFFSET,
                 ]}
                 scale={[INDICATOR_LINE_WIDTH * sizeModifier, sizeModifier, 1]}
@@ -103,8 +103,8 @@ function Display({
             </mesh>
             <mesh
                 position={[
-                    mousePosition.x * sizeModifier,
-                    (mousePosition.y - (0.5 - INDICATOR_LINE_WIDTH / 2)) *
+                    selectedPosition.x * sizeModifier,
+                    (selectedPosition.y - (0.5 - INDICATOR_LINE_WIDTH / 2)) *
                         sizeModifier,
                     LAYER_OFFSET,
                 ]}
@@ -115,8 +115,8 @@ function Display({
             </mesh>
             <mesh
                 position={[
-                    mousePosition.x * sizeModifier,
-                    (mousePosition.y + (0.5 - INDICATOR_LINE_WIDTH / 2)) *
+                    selectedPosition.x * sizeModifier,
+                    (selectedPosition.y + (0.5 - INDICATOR_LINE_WIDTH / 2)) *
                         sizeModifier,
                     LAYER_OFFSET,
                 ]}
@@ -129,8 +129,8 @@ function Display({
             {/* Color indicator */}
             <mesh
                 position={[
-                    mousePosition.x * sizeModifier,
-                    mousePosition.y * sizeModifier,
+                    selectedPosition.x * sizeModifier,
+                    selectedPosition.y * sizeModifier,
                     LAYER_OFFSET,
                 ]}
                 scale={[

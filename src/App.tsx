@@ -14,7 +14,7 @@ function App() {
     const [canvasData, setCanvasData] = useState<
         Array<{ x: number; y: number; color: string }>
     >([]); // State of canvas
-    const [mousePosition, setMousePosition] = useState<{
+    const [selectedPosition, setSelectedPosition] = useState<{
         x: number;
         y: number;
     }>({ x: 0, y: 0 });
@@ -176,8 +176,8 @@ function App() {
             <div className="App">
                 <Display
                     canvasData={canvasData}
-                    mousePosition={mousePosition}
-                    setMousePosition={setMousePosition}
+                    selectedPosition={selectedPosition}
+                    setSelectedPosition={setSelectedPosition}
                     color={color}
                     sizeModifier={SIZE_MODIFIER}
                 />
@@ -195,7 +195,7 @@ function App() {
                 <AddPixelControls
                     firestore={firestore}
                     CHUNK_SIZE={CHUNK_SIZE}
-                    mousePosition={mousePosition}
+                    mousePosition={selectedPosition}
                     color={color}
                     setColor={setColor}
                     canvasDataLength={canvasData.length}
@@ -214,9 +214,7 @@ function App() {
                     opacity: '0.6',
                 }}
             >
-                <CurrentPosition
-                    mousePosition={mousePosition}
-                />
+                <CurrentPosition mousePosition={selectedPosition} />
             </div>
         </StrictMode>
     );

@@ -3,6 +3,7 @@ import { Color } from 'react-color-palette';
 import { PlaneBufferGeometry, DoubleSide, NoToneMapping } from 'three';
 import { useMemo, useRef } from 'react';
 import { MapControls } from '@react-three/drei';
+import useEventListener from '../../hooks/useEventListener';
 
 interface CanvasProps {
     canvasData: Array<{ x: number; y: number; color: string }>;
@@ -143,6 +144,11 @@ function Display({
             </mesh>
         </>
     );
+
+    // Capture keypresses
+    useEventListener('keydown', ({ key }: { key: string }) => {
+        console.log(key);
+    });
 
     // What gets rendered on the main page
     return (

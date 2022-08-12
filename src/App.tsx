@@ -15,7 +15,6 @@ const SIZE_MODIFIER = 0.25; // Multiplies size of all three.js objects by this
 function App() {
     // If user is signed in
     const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
-    const [uid, setUid] = useState<string>();
 
     // State of canvas
     const [canvasData, setCanvasData] = useState<
@@ -35,11 +34,6 @@ function App() {
     useEffect(() => {
         getChunkData();
     }, []);
-
-    // Update uid
-    useEffect(() => {
-        setUid(firebase?.auth()?.currentUser?.uid);
-    }, [isSignedIn]);
 
     // Connect to Firestore
     const getChunkData = async () => {
@@ -162,12 +156,12 @@ function App() {
             >
                 <AddPixelControls
                     firestore={firestore}
+                    firebase={firebase}
                     CHUNK_SIZE={CHUNK_SIZE}
                     mousePosition={selectedPosition}
                     color={color}
                     setColor={setColor}
                     canvasDataLength={canvasData.length}
-                    uid={uid}
                 />
             </div>
 

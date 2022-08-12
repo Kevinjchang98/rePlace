@@ -1,30 +1,37 @@
-import { doc, Firestore, setDoc, updateDoc } from 'firebase/firestore';
+import {
+    doc,
+    Firestore,
+    increment,
+    setDoc,
+    updateDoc,
+} from 'firebase/firestore';
 import { useState } from 'react';
 import { Color, ColorPicker } from 'react-color-palette';
 import 'react-color-palette/lib/css/styles.css';
 
 interface AddPixelControlsProps {
     firestore: Firestore;
+    firebase: any;
     CHUNK_SIZE: number;
     mousePosition: { x: number; y: number };
     color: Color;
     setColor: Function;
     canvasDataLength: number;
-    uid: string | undefined;
 }
 function AddPixelControls({
     firestore,
+    firebase,
     CHUNK_SIZE,
     mousePosition,
     color,
     setColor,
     canvasDataLength,
-    uid,
 }: AddPixelControlsProps) {
     const [isHidden, setIsHidden] = useState<boolean>(true);
 
     const pushChunkData = async (x: number, y: number, color: string) => {
         const newData: any = {};
+        const uid = firebase?.auth()?.currentUser?.uid;
 
         // Append uid with ! delimiter if it exists, otherwise only include hex
         newData[`x${x % CHUNK_SIZE}y${y % CHUNK_SIZE}`] =
@@ -40,6 +47,17 @@ function AddPixelControls({
             await updateDoc(doc(firestore, 'chunks', newChunkId), newData);
         } catch (error) {
             await setDoc(doc(firestore, 'chunks', newChunkId), newData);
+        }
+
+        // Try to update user doc and increment number of pixels edited
+        try {
+            await updateDoc(doc(firestore, 'users', uid ? uid : 'Anonymous'), {
+                edits: increment(1),
+            });
+        } catch (error) {
+            await setDoc(doc(firestore, 'users', uid ? uid : 'Anonymous'), {
+                edits: increment(1),
+            });
         }
     };
 

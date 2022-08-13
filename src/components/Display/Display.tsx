@@ -144,10 +144,25 @@ function Display({
             </mesh>
         </>
     );
+    
+    // Stores mapping used for new x, y position corresponding each arrow key
+    // key: key type, value: [x, y] where x = change in x pos, and y = change in y pos
+    const keyMap = {
+        ArrowUp: [0, 1],
+        ArrowDown: [0, -1],
+        ArrowRight: [1, 0],
+        ArrowLeft: [-1, 0],
+    };
 
     // Capture keypresses
-    useEventListener('keydown', ({ key }: { key: string }) => {
-        console.log(key);
+    useEventListener('keydown', ({ key }: { key: 'ArrowUp' | 'ArrowDown' | 'ArrowRight' | 'ArrowLeft'}) => {
+        const dx = keyMap[key][0];
+        const dy = keyMap[key][1];
+        const mousePos = {
+            x: selectedPosition.x + dx,
+            y: selectedPosition.y + dy,
+        };
+        setSelectedPosition(mousePos);
     });
 
     // What gets rendered on the main page

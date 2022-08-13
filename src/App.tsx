@@ -1,19 +1,24 @@
-import { StrictMode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useColor } from 'react-color-palette';
 import { collection, onSnapshot, query } from 'firebase/firestore';
-import { firestore } from './firestore/firestore';
+import { firestore, firebase } from './firebase/firebase';
+import 'firebase/compat/auth';
 import './App.css';
 import Display from './components/Display/Display';
 import AddPixelControls from './components/AddPixelControls/AddPixelControls';
 import CurrentPosition from './components/CurrentPosition/CurrentPosition';
+import Profile from './components/Profile/Profile';
 
 const CHUNK_SIZE = 64; // Number of pixels stored as one document in Firestore
 const SIZE_MODIFIER = 0.25; // Multiplies size of all three.js objects by this
 
 function App() {
+    // If user is signed in
+    const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
+
     // State of canvas
     const [canvasData, setCanvasData] = useState<
-        Array<{ x: number; y: number; color: string }>
+        Array<{ x: number; y: number; color: string; uid: string }>
     >([]);
 
     // Currently selected pixel; pixel to be edited
@@ -50,7 +55,6 @@ function App() {
                 Object.keys(chunk.data()).forEach((pixel) => {
                     // For each pixel
 
-                    // setCanvasData((prevState: typeof canvasData) => {
                     const newPixel = {
                         // x = x_chunk * CHUNK_SIZE + x_local * CHUNK_SIZE
                         // if x_local < 0, add another CHUNK_SIZE
@@ -83,7 +87,26 @@ function App() {
                                     ? CHUNK_SIZE
                                     : 0)) *
                             SIZE_MODIFIER,
-                        color: chunk.data()[pixel],
+                        // Decode color and uid from chunk.data()[pixel] which
+                        // has format #112233!abcd if color is #112233 and uid
+                        // is abcd or #112233 if no uid
+                        color: chunk.data()[pixel].includes('!')
+                            ? chunk
+                                  .data()
+                                  [pixel].substring(
+                                      0,
+                                      chunk.data()[pixel].indexOf('!')
+                                  )
+                            : chunk.data()[pixel],
+                        // If uid exists, set it otherwise set to Anonymous
+                        uid: chunk.data()[pixel].includes('!')
+                            ? chunk
+                                  .data()
+                                  [pixel].substring(
+                                      chunk.data()[pixel].indexOf('!') + 1,
+                                      chunk.data()[pixel].length
+                                  )
+                            : 'Anonymous',
                     };
 
                     // Add to newCanvasData
@@ -97,7 +120,7 @@ function App() {
     };
 
     return (
-        <StrictMode>
+        <>
             <div className="App">
                 <Display
                     canvasData={canvasData}
@@ -105,6 +128,20 @@ function App() {
                     setSelectedPosition={setSelectedPosition}
                     color={color}
                     sizeModifier={SIZE_MODIFIER}
+                />
+            </div>
+
+            <div
+                style={{
+                    position: 'absolute',
+                    right: '0',
+                    top: '0',
+                }}
+            >
+                <Profile
+                    isSignedIn={isSignedIn}
+                    firebase={firebase}
+                    setIsSignedIn={setIsSignedIn}
                 />
             </div>
 
@@ -119,6 +156,7 @@ function App() {
             >
                 <AddPixelControls
                     firestore={firestore}
+                    firebase={firebase}
                     CHUNK_SIZE={CHUNK_SIZE}
                     mousePosition={selectedPosition}
                     color={color}
@@ -141,7 +179,7 @@ function App() {
             >
                 <CurrentPosition mousePosition={selectedPosition} />
             </div>
-        </StrictMode>
+        </>
     );
 }
 

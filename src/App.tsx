@@ -38,12 +38,12 @@ function App() {
     }, []);
 
     // Connect to Firestore
-    const getChunkData = async () => {
+    const getChunkData = () => {
         // Query the chunks collection
         const chunkQuery = query(collection(firestore, 'chunks'));
 
         // Establish realtime connection
-        const unsubscribe = await onSnapshot(chunkQuery, (snapshot) => {
+        const unsubscribe = onSnapshot(chunkQuery, (snapshot) => {
             // Clear old canvas Data
             setCanvasData([]);
 

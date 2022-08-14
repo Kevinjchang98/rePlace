@@ -21,6 +21,11 @@ function App() {
         Array<{ x: number; y: number; color: string; uid: string }>
     >([]);
 
+    // Width of selectable canvas area
+    const SELECTABLE_CANVAS_WIDTH = 500;
+    // Height of selectable canvas 
+    const SELECTABLE_CANVAS_HEIGHT = 500; 
+
     // Currently selected pixel; pixel to be edited
     const [selectedPosition, setSelectedPosition] = useState<{
         x: number;
@@ -128,6 +133,8 @@ function App() {
                     setSelectedPosition={setSelectedPosition}
                     color={color}
                     sizeModifier={SIZE_MODIFIER}
+                    canvasWidth={SELECTABLE_CANVAS_WIDTH}
+                    canvasHeight={SELECTABLE_CANVAS_HEIGHT}
                 />
             </div>
 

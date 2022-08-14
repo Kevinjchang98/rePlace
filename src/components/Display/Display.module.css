@@ -1,0 +1,15 @@
+.buttonWrapper {
+    width: 80px;
+    height: 45px;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    z-index: 1;
+    text-align: center;
+}
+
+.canvasWrapper {
+    width: 100vw;
+    height: 100vh;
+    background-color: white;
+}

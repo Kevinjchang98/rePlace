@@ -4,6 +4,7 @@ import { PlaneBufferGeometry, DoubleSide, NoToneMapping } from 'three';
 import { useMemo, useRef } from 'react';
 import { MapControls } from '@react-three/drei';
 import useEventListener from '../../hooks/useEventListener';
+import styles from './Display.module.css';
 
 interface CanvasProps {
     canvasData: Array<{ x: number; y: number; color: string }>;
@@ -31,7 +32,6 @@ function Display({
     canvasHeight,
 }: CanvasProps) {
     const LAYER_OFFSET = 0.001; // Offset to resolve z-fighting
-
     const INDICATOR_LINE_WIDTH = 0.1; // Thickness of selected pixel indicator outline
 
     const controlsRef = useRef<any>(); // Ref to MapControls
@@ -144,8 +144,9 @@ function Display({
         </>
     );
 
-    // Stores mapping used for new x, y position corresponding each arrow key
-    // key: key type, value: [x, y] where x = change in x pos, and y = change in y pos
+    // Stores mapping used for new x, y position corresponding to each key
+    // key: key type, value: [x, y] where x = change in x pos, and y = change in
+    // y pos
     const keyMap = {
         ArrowUp: [0, 1],
         ArrowDown: [0, -1],
@@ -191,21 +192,9 @@ function Display({
         }
     );
 
-    // What gets rendered on the main page
     return (
-        // TODO: Refactor style into css module
         <>
-            <div
-                style={{
-                    width: '80px',
-                    height: '45px',
-                    position: 'absolute',
-                    bottom: '10px',
-                    left: '10px',
-                    zIndex: '1',
-                    textAlign: 'center',
-                }}
-            >
+            <div className={styles.buttonWrapper}>
                 <button
                     onClick={() => {
                         if (controlsRef.current) {
@@ -217,13 +206,7 @@ function Display({
                 </button>
             </div>
 
-            <div
-                style={{
-                    width: '100vw',
-                    height: '100vh',
-                    backgroundColor: 'white',
-                }}
-            >
+            <div className={styles.canvasWrapper}>
                 <Canvas
                     frameloop="demand"
                     orthographic={true}

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { StyledFirebaseAuth } from 'react-firebaseui';
+import styles from './Profile.module.css';
 
 interface ProfileProps {
     firebase: any;
@@ -31,12 +32,14 @@ function Profile({ firebase, isSignedIn, setIsSignedIn }: ProfileProps) {
     }, []);
 
     return !isSignedIn ? (
-        <StyledFirebaseAuth
-            uiConfig={uiConfig}
-            firebaseAuth={firebase.auth()}
-        />
+        <div className={styles.wrapper}>
+            <StyledFirebaseAuth
+                uiConfig={uiConfig}
+                firebaseAuth={firebase.auth()}
+            />
+        </div>
     ) : (
-        <div style={{ color: '#888', padding: '5px' }}>
+        <div className={styles.wrapper}>
             {`${firebase.auth().currentUser.displayName} - `}
             <a onClick={() => firebase.auth().signOut()}>Sign-out</a>
         </div>

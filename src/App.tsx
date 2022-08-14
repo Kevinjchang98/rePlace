@@ -21,6 +21,11 @@ function App() {
         Array<{ x: number; y: number; color: string; uid: string }>
     >([]);
 
+    // Width of selectable canvas area
+    const SELECTABLE_CANVAS_WIDTH = 500;
+    // Height of selectable canvas 
+    const SELECTABLE_CANVAS_HEIGHT = 500; 
+
     // Currently selected pixel; pixel to be edited
     const [selectedPosition, setSelectedPosition] = useState<{
         x: number;
@@ -128,32 +133,16 @@ function App() {
                     setSelectedPosition={setSelectedPosition}
                     color={color}
                     sizeModifier={SIZE_MODIFIER}
+                    canvasWidth={SELECTABLE_CANVAS_WIDTH}
+                    canvasHeight={SELECTABLE_CANVAS_HEIGHT}
                 />
-            </div>
 
-            <div
-                style={{
-                    position: 'absolute',
-                    right: '0',
-                    top: '0',
-                }}
-            >
                 <Profile
                     isSignedIn={isSignedIn}
                     firebase={firebase}
                     setIsSignedIn={setIsSignedIn}
                 />
-            </div>
 
-            <div
-                style={{
-                    position: 'absolute',
-                    background: '#888',
-                    padding: '10px',
-                    right: '0',
-                    top: 'calc(50vh - 250px )',
-                }}
-            >
                 <AddPixelControls
                     firestore={firestore}
                     firebase={firebase}
@@ -163,20 +152,7 @@ function App() {
                     setColor={setColor}
                     canvasDataLength={canvasData.length}
                 />
-            </div>
 
-            <div
-                style={{
-                    width: '150px',
-                    position: 'absolute',
-                    background: '#888',
-                    top: '5%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    borderRadius: '10%',
-                    opacity: '0.6',
-                }}
-            >
                 <CurrentPosition mousePosition={selectedPosition} />
             </div>
         </>

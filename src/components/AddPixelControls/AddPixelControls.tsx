@@ -8,6 +8,7 @@ import {
 import { useState } from 'react';
 import { Color, ColorPicker } from 'react-color-palette';
 import 'react-color-palette/lib/css/styles.css';
+import styles from './AddPixelControls.module.css';
 
 interface AddPixelControlsProps {
     firestore: Firestore;
@@ -62,7 +63,7 @@ function AddPixelControls({
     };
 
     return (
-        <div>
+        <div className={styles.wrapper}>
             <button
                 onClick={() => {
                     setIsHidden(!isHidden);

@@ -11,6 +11,8 @@ interface CanvasProps {
     setSelectedPosition: Function;
     color: Color;
     sizeModifier: number;
+    canvasWidth: number;
+    canvasHeight: number;
 }
 
 interface PixelData {
@@ -25,10 +27,11 @@ function Display({
     setSelectedPosition,
     color,
     sizeModifier,
+    canvasWidth,
+    canvasHeight,
 }: CanvasProps) {
     const LAYER_OFFSET = 0.001; // Offset to resolve z-fighting
-    const SELECTABLE_CANVAS_WIDTH = 500; // Width of selectable canvas area
-    const SELECTABLE_CANVAS_HEIGHT = 500; // Height of selectable canvas
+
     const INDICATOR_LINE_WIDTH = 0.1; // Thickness of selected pixel indicator outline
 
     const controlsRef = useRef<any>(); // Ref to MapControls
@@ -53,11 +56,7 @@ function Display({
     // Plane to allow for selecting of pixel by clicking the mouse
     const mousePositionCapturePlane = (
         <mesh
-            scale={[
-                SELECTABLE_CANVAS_WIDTH * sizeModifier,
-                SELECTABLE_CANVAS_HEIGHT * sizeModifier,
-                1,
-            ]}
+            scale={[canvasWidth * sizeModifier, canvasHeight * sizeModifier, 1]}
             position={[0, 0, 0]}
             onClick={(e) => {
                 let mousePos = {
@@ -152,15 +151,28 @@ function Display({
         ArrowDown: [0, -1],
         ArrowRight: [1, 0],
         ArrowLeft: [-1, 0],
+        w: [0, 1],
+        a: [-1, 0],
+        s: [0, -1],
+        d: [1, 0],
     };
 
+    // TODO: also make wasd controllable. make space and enter submit color
     // Capture keypresses
     useEventListener(
         'keydown',
         ({
             key,
         }: {
-            key: 'ArrowUp' | 'ArrowDown' | 'ArrowRight' | 'ArrowLeft';
+            key:
+                | 'ArrowUp'
+                | 'ArrowDown'
+                | 'ArrowRight'
+                | 'ArrowLeft'
+                | 'w'
+                | 'a'
+                | 's'
+                | 'd';
         }) => {
             const dx = keyMap[key][0];
             const dy = keyMap[key][1];
@@ -168,7 +180,14 @@ function Display({
                 x: selectedPosition.x + dx,
                 y: selectedPosition.y + dy,
             };
-            setSelectedPosition(mousePos);
+            if (
+                mousePos.x <= canvasWidth / 2 &&
+                mousePos.x >= -canvasWidth / 2 &&
+                mousePos.y <= canvasHeight / 2 &&
+                mousePos.y >= -canvasHeight / 2
+            ) {
+                setSelectedPosition(mousePos);
+            }
         }
     );
 

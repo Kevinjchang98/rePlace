@@ -1,15 +1,12 @@
-import { useState } from 'react';
+import styles from './CurrentPosition.module.css';
 
 interface CurrentPositionProps {
     mousePosition: { x: number; y: number };
 }
-function CurrentPosition({
-    mousePosition
-}: CurrentPositionProps) {
-
+function CurrentPosition({ mousePosition }: CurrentPositionProps) {
     return (
-        <div>
-            <h2>({mousePosition.x}, {mousePosition.y})</h2>
+        <div className={styles.wrapper}>
+            ({mousePosition.x}, {mousePosition.y})
         </div>
     );
 }

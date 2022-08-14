@@ -155,11 +155,15 @@ function Display({
         ArrowDown: [0, -1],
         ArrowRight: [1, 0],
         ArrowLeft: [-1, 0],
+        w: [0, 1],
+        a: [-1, 0],
+        s: [0, -1],
+        d: [1, 0],
     };
 
     // TODO: also make wasd controllable. make space and enter submit color
     // Capture keypresses
-    useEventListener('keydown', ({ key }: { key: 'ArrowUp' | 'ArrowDown' | 'ArrowRight' | 'ArrowLeft'}) => {
+    useEventListener('keydown', ({ key }: { key: 'ArrowUp' | 'ArrowDown' | 'ArrowRight' | 'ArrowLeft' | 'w' | 'a' | 's' | 'd' }) => {
         const dx = keyMap[key][0];
         const dy = keyMap[key][1];
         const mousePos = {

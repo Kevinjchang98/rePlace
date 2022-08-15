@@ -65,6 +65,7 @@ function AddPixelControls({
     return (
         <div className={styles.wrapper}>
             <button
+                className={`${styles.minimizeButton} ${styles.pointerEventsWrapper}`}
                 onClick={() => {
                     setIsHidden(!isHidden);
                 }}
@@ -73,20 +74,21 @@ function AddPixelControls({
             </button>
 
             {isHidden ? null : (
-                <div>
-                    Color:
-                    <ColorPicker
-                        width={250}
-                        height={200}
-                        color={color}
-                        onChange={(newColor) => {
-                            setColor(newColor);
-                        }}
-                        hideHSV
-                        dark
-                    />
-                    <br />
+                <div className={styles.contents}>
+                    <div className={styles.pointerEventsWrapper}>
+                        <ColorPicker
+                            width={250}
+                            height={200}
+                            color={color}
+                            onChange={(newColor) => {
+                                setColor(newColor);
+                            }}
+                            hideHSV
+                            dark
+                        />
+                    </div>
                     <button
+                        className={styles.pointerEventsWrapper}
                         onClick={() => {
                             pushChunkData(
                                 mousePosition.x,
@@ -97,7 +99,6 @@ function AddPixelControls({
                     >
                         Submit
                     </button>
-                    <p>Total pixels drawn: {canvasDataLength}</p>
                 </div>
             )}
         </div>

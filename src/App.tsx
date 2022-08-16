@@ -34,11 +34,6 @@ function App() {
 
     // Refresh canvasData on page load
     useEffect(() => {
-        getChunkData();
-    }, []);
-
-    // Connect to Firestore
-    const getChunkData = () => {
         // Query the chunks collection
         const chunkQuery = query(collection(firestore, 'chunks'));
 
@@ -119,7 +114,11 @@ function App() {
             // Update canvasData
             setCanvasData(newCanvasData);
         });
-    };
+
+        return () => {
+            unsubscribe();
+        };
+    }, []);
 
     return (
         <>

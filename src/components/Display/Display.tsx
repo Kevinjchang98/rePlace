@@ -160,37 +160,23 @@ function Display({
 
     // TODO: also make wasd controllable. make space and enter submit color
     // Capture keypresses
-    useEventListener(
-        'keydown',
-        ({
-            key,
-        }: {
-            key:
-                | 'ArrowUp'
-                | 'ArrowDown'
-                | 'ArrowRight'
-                | 'ArrowLeft'
-                | 'w'
-                | 'a'
-                | 's'
-                | 'd';
-        }) => {
-            const dx = keyMap[key][0];
-            const dy = keyMap[key][1];
-            const mousePos = {
-                x: selectedPosition.x + dx,
-                y: selectedPosition.y + dy,
-            };
-            if (
-                mousePos.x <= canvasWidth / 2 &&
-                mousePos.x >= -canvasWidth / 2 &&
-                mousePos.y <= canvasHeight / 2 &&
-                mousePos.y >= -canvasHeight / 2
-            ) {
-                setSelectedPosition(mousePos);
-            }
+    useEventListener('keydown', ({ key }: { key: keyof typeof keyMap }) => {
+        const dx = keyMap[key][0];
+        const dy = keyMap[key][1];
+        const mousePos = {
+            x: selectedPosition.x + dx,
+            y: selectedPosition.y + dy,
+        };
+
+        if (
+            mousePos.x <= canvasWidth / 2 &&
+            mousePos.x >= -canvasWidth / 2 &&
+            mousePos.y <= canvasHeight / 2 &&
+            mousePos.y >= -canvasHeight / 2
+        ) {
+            setSelectedPosition(mousePos);
         }
-    );
+    });
 
     return (
         <>

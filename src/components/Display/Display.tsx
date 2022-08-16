@@ -158,17 +158,12 @@ function Display({
         d: [1, 0],
     };
 
-    // Helper function to check if key exists in obj
-    function hasKey<O>(obj: O, key: PropertyKey): key is keyof O {
-        return key in obj;
-    }
-
     // TODO: also make wasd controllable. make space and enter submit color
     // Capture keypresses
     useEventListener('keydown', ({ key }: { key: string }) => {
-        if (hasKey(keyMap, key)) {
-            const dx = keyMap[key][0];
-            const dy = keyMap[key][1];
+        if (key in keyMap) {
+            const dx = keyMap[key as keyof typeof keyMap][0];
+            const dy = keyMap[key as keyof typeof keyMap][1];
             const mousePos = {
                 x: selectedPosition.x + dx,
                 y: selectedPosition.y + dy,

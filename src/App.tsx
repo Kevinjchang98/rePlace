@@ -11,6 +11,8 @@ import Profile from './components/Profile/Profile';
 
 const CHUNK_SIZE = 64; // Number of pixels stored as one document in Firestore
 const SIZE_MODIFIER = 0.25; // Multiplies size of all three.js objects by this
+const SELECTABLE_CANVAS_WIDTH = 500; // Width of selectable canvas area
+const SELECTABLE_CANVAS_HEIGHT = 500; // Height of selectable canvas
 
 function App() {
     // If user is signed in
@@ -20,11 +22,6 @@ function App() {
     const [canvasData, setCanvasData] = useState<
         Array<{ x: number; y: number; color: string; uid: string }>
     >([]);
-
-    // Width of selectable canvas area
-    const SELECTABLE_CANVAS_WIDTH = 500;
-    // Height of selectable canvas 
-    const SELECTABLE_CANVAS_HEIGHT = 500; 
 
     // Currently selected pixel; pixel to be edited
     const [selectedPosition, setSelectedPosition] = useState<{
@@ -37,16 +34,11 @@ function App() {
 
     // Refresh canvasData on page load
     useEffect(() => {
-        getChunkData();
-    }, []);
-
-    // Connect to Firestore
-    const getChunkData = async () => {
         // Query the chunks collection
         const chunkQuery = query(collection(firestore, 'chunks'));
 
         // Establish realtime connection
-        const unsubscribe = await onSnapshot(chunkQuery, (snapshot) => {
+        const unsubscribe = onSnapshot(chunkQuery, (snapshot) => {
             // Clear old canvas Data
             setCanvasData([]);
 
@@ -122,7 +114,11 @@ function App() {
             // Update canvasData
             setCanvasData(newCanvasData);
         });
-    };
+
+        return () => {
+            unsubscribe();
+        };
+    }, []);
 
     return (
         <>

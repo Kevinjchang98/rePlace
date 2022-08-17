@@ -7,7 +7,9 @@ import './App.css';
 import Display from './components/Display/Display';
 import AddPixelControls from './components/AddPixelControls/AddPixelControls';
 import CurrentPosition from './components/CurrentPosition/CurrentPosition';
+import LoginStatus from './components/LoginStatus/LoginStatus';
 import Profile from './components/Profile/Profile';
+import { Route, Routes } from 'react-router-dom';
 
 const CHUNK_SIZE = 64; // Number of pixels stored as one document in Firestore
 const SIZE_MODIFIER = 0.25; // Multiplies size of all three.js objects by this
@@ -121,37 +123,47 @@ function App() {
     }, []);
 
     return (
-        <>
-            <div className="App">
-                <Display
-                    canvasData={canvasData}
-                    selectedPosition={selectedPosition}
-                    setSelectedPosition={setSelectedPosition}
-                    color={color}
-                    sizeModifier={SIZE_MODIFIER}
-                    canvasWidth={SELECTABLE_CANVAS_WIDTH}
-                    canvasHeight={SELECTABLE_CANVAS_HEIGHT}
-                />
+        <Routes>
+            <Route
+                path="/"
+                element={
+                    <div className="App">
+                        <Display
+                            canvasData={canvasData}
+                            selectedPosition={selectedPosition}
+                            setSelectedPosition={setSelectedPosition}
+                            color={color}
+                            sizeModifier={SIZE_MODIFIER}
+                            canvasWidth={SELECTABLE_CANVAS_WIDTH}
+                            canvasHeight={SELECTABLE_CANVAS_HEIGHT}
+                        />
 
-                <Profile
-                    isSignedIn={isSignedIn}
-                    firebase={firebase}
-                    setIsSignedIn={setIsSignedIn}
-                />
+                        <LoginStatus
+                            isSignedIn={isSignedIn}
+                            firebase={firebase}
+                            setIsSignedIn={setIsSignedIn}
+                        />
 
-                <AddPixelControls
-                    firestore={firestore}
-                    firebase={firebase}
-                    CHUNK_SIZE={CHUNK_SIZE}
-                    mousePosition={selectedPosition}
-                    color={color}
-                    setColor={setColor}
-                    canvasDataLength={canvasData.length}
-                />
+                        <AddPixelControls
+                            firestore={firestore}
+                            firebase={firebase}
+                            CHUNK_SIZE={CHUNK_SIZE}
+                            mousePosition={selectedPosition}
+                            color={color}
+                            setColor={setColor}
+                            canvasDataLength={canvasData.length}
+                        />
 
-                <CurrentPosition mousePosition={selectedPosition} />
-            </div>
-        </>
+                        <CurrentPosition mousePosition={selectedPosition} />
+                    </div>
+                }
+            />
+
+            <Route
+                path="/profile"
+                element={<Profile firebase={firebase} firestore={firestore} />}
+            />
+        </Routes>
     );
 }
 

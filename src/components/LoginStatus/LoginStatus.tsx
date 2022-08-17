@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { StyledFirebaseAuth } from 'react-firebaseui';
+import { Link } from 'react-router-dom';
 import styles from './LoginStatus.module.css';
 
 interface ProfileProps {
@@ -8,7 +9,7 @@ interface ProfileProps {
     setIsSignedIn: Function;
 }
 
-function Profile({ firebase, isSignedIn, setIsSignedIn }: ProfileProps) {
+function LoginStatus({ firebase, isSignedIn, setIsSignedIn }: ProfileProps) {
     // Configure FirebaseUI.
     const uiConfig = {
         // Popup signin flow rather than redirect flow.
@@ -40,10 +41,12 @@ function Profile({ firebase, isSignedIn, setIsSignedIn }: ProfileProps) {
         </div>
     ) : (
         <div className={styles.wrapper}>
-            {`${firebase.auth().currentUser.displayName} - `}
+            <Link to="/profile">
+                {`${firebase.auth().currentUser.displayName} - `}
+            </Link>
             <a onClick={() => firebase.auth().signOut()}>Sign-out</a>
         </div>
     );
 }
 
-export default Profile;
+export default LoginStatus;

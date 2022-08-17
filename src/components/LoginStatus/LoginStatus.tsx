@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { StyledFirebaseAuth } from 'react-firebaseui';
-import styles from './Profile.module.css';
+import styles from './LoginStatus.module.css';
 
 interface ProfileProps {
     firebase: any;

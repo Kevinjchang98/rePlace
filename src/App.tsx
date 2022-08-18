@@ -151,7 +151,6 @@ function App() {
                             mousePosition={selectedPosition}
                             color={color}
                             setColor={setColor}
-                            canvasDataLength={canvasData.length}
                         />
 
                         <CurrentPosition mousePosition={selectedPosition} />

@@ -16,6 +16,7 @@
     "react": "^18.2.0",
     "react-color-palette": "^6.2.0",
     "react-dom": "^18.2.0",
+    "react-fade-in": "^2.0.1",
     "react-firebaseui": "^6.0.0",
     "react-router-dom": "^6.3.0",
     "three": "^0.143.0",

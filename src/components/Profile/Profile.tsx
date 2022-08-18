@@ -28,7 +28,19 @@ function Profile({ firebase, firestore }: ProfileProps) {
     return (
         <div>
             <h1>{firebase.auth().currentUser.displayName}</h1>
-            {data ? <p>Edits made: {data.edits}</p> : null}
+            {data ? (
+                <>
+                    <p>Edits made: {data.edits}</p>
+                    <p>
+                        Last logged in:{' '}
+                        {firebase.auth().currentUser.metadata.lastSignInTime}
+                    </p>
+                    <p>
+                        Account created:{' '}
+                        {firebase.auth().currentUser.metadata.creationTime}
+                    </p>
+                </>
+            ) : null}
             <Link to="/">Back</Link>
         </div>
     );

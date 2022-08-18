@@ -1,6 +1,7 @@
 import { doc, getDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import FadeIn from 'react-fade-in';
 
 interface ProfileProps {
     firebase: any;
@@ -26,10 +27,10 @@ function Profile({ firebase, firestore }: ProfileProps) {
     };
 
     return (
-        <div>
-            <h1>{firebase.auth().currentUser.displayName}</h1>
+        <>
             {data ? (
-                <>
+                <FadeIn delay={75}>
+                    <h1>{firebase.auth().currentUser.displayName}</h1>
                     <p>Edits made: {data.edits}</p>
                     <p>
                         Last logged in:{' '}
@@ -39,10 +40,14 @@ function Profile({ firebase, firestore }: ProfileProps) {
                         Account created:{' '}
                         {firebase.auth().currentUser.metadata.creationTime}
                     </p>
-                </>
-            ) : null}
-            <Link to="/">Back</Link>
-        </div>
+                    <Link to="/">Back</Link>
+                </FadeIn>
+            ) : (
+                <FadeIn delay={100}>
+                    <Link to="/">Back</Link>
+                </FadeIn>
+            )}
+        </>
     );
 }
 

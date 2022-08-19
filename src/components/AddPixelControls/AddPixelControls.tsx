@@ -31,7 +31,6 @@ function AddPixelControls({
     setColor,
 }: AddPixelControlsProps) {
     const [isHidden, setIsHidden] = useState<boolean>(true);
-    const [isSubmittable, setIsSubmittable] = useState<boolean>(true);
 
     useEffect(() => {
         time.setSeconds(time.getSeconds());
@@ -41,8 +40,6 @@ function AddPixelControls({
     const pushChunkData = async (x: number, y: number, color: string) => {
         const newData: any = {};
         const uid = firebase?.auth()?.currentUser?.uid;
-
-        setIsSubmittable(false);
 
         time.setSeconds(time.getSeconds() + TIMER_DELAY);
         restart(time);
@@ -79,10 +76,9 @@ function AddPixelControls({
     const time = new Date();
 
     // TODO: Invalid expiryTimestamp settings warning on mount
-    // Exposes seconds counter and restart() method
-    const { seconds, restart } = useTimer({
+    // Exposes seconds counter, restart() method, and isRunning
+    const { seconds, restart, isRunning } = useTimer({
         expiry: time,
-        onExpire: () => setIsSubmittable(true),
     } as any);
 
     return (
@@ -113,7 +109,7 @@ function AddPixelControls({
                     <button
                         className={styles.pointerEventsWrapper}
                         onClick={() => {
-                            if (isSubmittable) {
+                            if (!isRunning) {
                                 pushChunkData(
                                     mousePosition.x,
                                     mousePosition.y,
@@ -122,7 +118,7 @@ function AddPixelControls({
                             }
                         }}
                     >
-                        {isSubmittable ? `Submit` : seconds}
+                        {!isRunning ? `Submit` : seconds}
                     </button>
                 </div>
             )}

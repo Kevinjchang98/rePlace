@@ -35,7 +35,6 @@ function AddPixelControls({
 
     useEffect(() => {
         time.setSeconds(time.getSeconds());
-        console.log(time);
         restart(time);
     }, []);
 

@@ -5,8 +5,9 @@ import {
     setDoc,
     updateDoc,
 } from 'firebase/firestore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Color, ColorPicker } from 'react-color-palette';
+import { useTimer } from 'react-timer-hook';
 import 'react-color-palette/lib/css/styles.css';
 import styles from './AddPixelControls.module.css';
 
@@ -17,8 +18,10 @@ interface AddPixelControlsProps {
     mousePosition: { x: number; y: number };
     color: Color;
     setColor: Function;
-    canvasDataLength: number;
 }
+
+const TIMER_DELAY = 3; // Minimum seconds between pixels placed
+
 function AddPixelControls({
     firestore,
     firebase,
@@ -26,13 +29,23 @@ function AddPixelControls({
     mousePosition,
     color,
     setColor,
-    canvasDataLength,
 }: AddPixelControlsProps) {
     const [isHidden, setIsHidden] = useState<boolean>(true);
+    const [isSubmittable, setIsSubmittable] = useState<boolean>(true);
+
+    useEffect(() => {
+        time.setSeconds(time.getSeconds());
+        restart(time);
+    }, []);
 
     const pushChunkData = async (x: number, y: number, color: string) => {
         const newData: any = {};
         const uid = firebase?.auth()?.currentUser?.uid;
+
+        setIsSubmittable(false);
+
+        time.setSeconds(time.getSeconds() + TIMER_DELAY);
+        restart(time);
 
         // Append uid with ! delimiter if it exists, otherwise only include hex
         newData[`x${x % CHUNK_SIZE}y${y % CHUNK_SIZE}`] =
@@ -62,6 +75,16 @@ function AddPixelControls({
         }
     };
 
+    // Time used for timer
+    const time = new Date();
+
+    // TODO: Invalid expiryTimestamp settings warning on mount
+    // Exposes seconds counter and restart() method
+    const { seconds, restart } = useTimer({
+        expiry: time,
+        onExpire: () => setIsSubmittable(true),
+    } as any);
+
     return (
         <div className={styles.wrapper}>
             <button
@@ -90,14 +113,16 @@ function AddPixelControls({
                     <button
                         className={styles.pointerEventsWrapper}
                         onClick={() => {
-                            pushChunkData(
-                                mousePosition.x,
-                                mousePosition.y,
-                                color.hex
-                            );
+                            if (isSubmittable) {
+                                pushChunkData(
+                                    mousePosition.x,
+                                    mousePosition.y,
+                                    color.hex
+                                );
+                            }
                         }}
                     >
-                        Submit
+                        {isSubmittable ? `Submit` : seconds}
                     </button>
                 </div>
             )}

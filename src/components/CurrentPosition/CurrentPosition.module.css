@@ -11,3 +11,9 @@
     font-family: inherit;
     background-color: #1a1a1a;
 }
+
+@media (prefers-color-scheme: light) {
+    .wrapper {
+        background-color: #f9f9f9;
+    }
+}

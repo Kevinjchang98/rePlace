@@ -1,48 +1,53 @@
-import { useEffect } from 'react';
-import { StyledFirebaseAuth } from 'react-firebaseui';
-import styles from './Profile.module.css';
+import { doc, getDoc } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import FadeIn from 'react-fade-in';
 
 interface ProfileProps {
     firebase: any;
-    isSignedIn: boolean;
-    setIsSignedIn: Function;
+    firestore: any;
 }
 
-function Profile({ firebase, isSignedIn, setIsSignedIn }: ProfileProps) {
-    // Configure FirebaseUI.
-    const uiConfig = {
-        // Popup signin flow rather than redirect flow.
-        signInFlow: 'popup',
-        // We will display Google and Facebook as auth providers.
-        signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
-        callbacks: {
-            // Avoid redirects after sign-in.
-            signInSuccessWithAuthResult: () => false,
-        },
-    };
+function Profile({ firebase, firestore }: ProfileProps) {
+    const [data, setData] = useState<{ edits: number }>();
 
-    // Listen to the Firebase Auth state and set the local state.
+    // TODO: Check if logged in first
     useEffect(() => {
-        const unregisterAuthObserver = firebase
-            .auth()
-            .onAuthStateChanged((user: any) => {
-                setIsSignedIn(!!user);
-            });
-        return () => unregisterAuthObserver(); // Make sure we un-register Firebase observers when the component unmounts.
+        getProfileData();
     }, []);
 
-    return !isSignedIn ? (
-        <div className={styles.wrapper}>
-            <StyledFirebaseAuth
-                uiConfig={uiConfig}
-                firebaseAuth={firebase.auth()}
-            />
-        </div>
-    ) : (
-        <div className={styles.wrapper}>
-            {`${firebase.auth().currentUser.displayName} - `}
-            <a onClick={() => firebase.auth().signOut()}>Sign-out</a>
-        </div>
+    const getProfileData = async () => {
+        const profileSnapshot = await getDoc(
+            doc(firestore, 'users', firebase.auth().currentUser.uid)
+        );
+
+        if (profileSnapshot.exists()) {
+            setData(profileSnapshot.data() as keyof typeof data);
+        }
+    };
+
+    return (
+        <>
+            {data ? (
+                <FadeIn delay={75}>
+                    <h1>{firebase.auth().currentUser.displayName}</h1>
+                    <p>Edits made: {data.edits}</p>
+                    <p>
+                        Last logged in:{' '}
+                        {firebase.auth().currentUser.metadata.lastSignInTime}
+                    </p>
+                    <p>
+                        Account created:{' '}
+                        {firebase.auth().currentUser.metadata.creationTime}
+                    </p>
+                    <Link to="/">Back</Link>
+                </FadeIn>
+            ) : (
+                <FadeIn delay={100}>
+                    <Link to="/">Back</Link>
+                </FadeIn>
+            )}
+        </>
     );
 }
 

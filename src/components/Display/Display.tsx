@@ -64,23 +64,25 @@ function Display({
         );
     });
 
-    const userPixels = canvasData.map((pixel: PixelData, i: number) => {
-        if (pixel.uid == uid) {
-            return (
-                <mesh
-                    position={[pixel.x, pixel.y, 1 * sizeModifier]}
-                    key={i}
-                    geometry={cubePixelGeometry}
-                    scale={[sizeModifier, sizeModifier, 2 * sizeModifier]}
-                >
-                    <meshStandardMaterial
-                        side={DoubleSide}
-                        color={pixel.color}
-                    />
-                </mesh>
-            );
-        }
-    });
+    const userPixels = filterUserPixels
+        ? canvasData.map((pixel: PixelData, i: number) => {
+              if (pixel.uid == uid) {
+                  return (
+                      <mesh
+                          position={[pixel.x, pixel.y, 1 * sizeModifier]}
+                          key={i}
+                          geometry={cubePixelGeometry}
+                          scale={[sizeModifier, sizeModifier, 2 * sizeModifier]}
+                      >
+                          <meshStandardMaterial
+                              side={DoubleSide}
+                              color={pixel.color}
+                          />
+                      </mesh>
+                  );
+              }
+          })
+        : null;
 
     // Plane to allow for selecting of pixel by clicking the mouse
     const mousePositionCapturePlane = (

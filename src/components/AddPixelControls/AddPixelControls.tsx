@@ -49,15 +49,15 @@ function AddPixelControls({
             color + (uid ? `!${uid}` : '');
 
         // Format chunk id string (e.g. x12y24)
-        const newChunkId = String(
+        const chunkId = String(
             'x' + Math.floor(x / CHUNK_SIZE) + 'y' + Math.floor(y / CHUNK_SIZE)
         );
 
         // Try to update existing chunk doc, if it doesn't exist then create it
         try {
-            await updateDoc(doc(firestore, 'chunks', newChunkId), newData);
+            await updateDoc(doc(firestore, 'chunks', chunkId), newData);
         } catch (error) {
-            await setDoc(doc(firestore, 'chunks', newChunkId), newData);
+            await setDoc(doc(firestore, 'chunks', chunkId), newData);
         }
 
         // Try to update user doc and increment number of pixels edited
@@ -69,6 +69,25 @@ function AddPixelControls({
             await setDoc(doc(firestore, 'users', uid ? uid : 'Anonymous'), {
                 edits: increment(1),
             });
+        }
+    };
+
+    const pushFreqData = async (x: number, y: number) => {
+        const newData: any = {};
+
+        // Append uid with ! delimiter if it exists, otherwise only include hex
+        newData[`x${x % CHUNK_SIZE}y${y % CHUNK_SIZE}`] = increment(1);
+
+        // Format chunk id string (e.g. x12y24)
+        const chunkId = String(
+            'x' + Math.floor(x / CHUNK_SIZE) + 'y' + Math.floor(y / CHUNK_SIZE)
+        );
+
+        // Try to update existing chunk doc, if it doesn't exist then create it
+        try {
+            await updateDoc(doc(firestore, 'freq', chunkId), newData);
+        } catch (error) {
+            await setDoc(doc(firestore, 'freq', chunkId), newData);
         }
     };
 
@@ -115,6 +134,7 @@ function AddPixelControls({
                                     mousePosition.y,
                                     color.hex
                                 );
+                                pushFreqData(mousePosition.x, mousePosition.y);
                             }
                         }}
                     >

@@ -13,6 +13,7 @@ import styles from './Display.module.css';
 
 interface CanvasProps {
     canvasData: Array<{ x: number; y: number; color: string; uid: string }>;
+    freqData: Array<{ x: number; y: number; freq: number }>;
     selectedPosition: { x: number; y: number };
     setSelectedPosition: Function;
     color: Color;
@@ -20,6 +21,7 @@ interface CanvasProps {
     canvasWidth: number;
     canvasHeight: number;
     filterUserPixels: boolean;
+    filterFreqPixels: boolean;
     uid: string | undefined;
 }
 
@@ -30,8 +32,15 @@ interface PixelData {
     uid: string;
 }
 
+interface FreqPixelData {
+    x: number;
+    y: number;
+    freq: number;
+}
+
 function Display({
     canvasData,
+    freqData,
     selectedPosition,
     setSelectedPosition,
     color,
@@ -39,6 +48,7 @@ function Display({
     canvasWidth,
     canvasHeight,
     filterUserPixels,
+    filterFreqPixels,
     uid,
 }: CanvasProps) {
     const LAYER_OFFSET = 0.001; // Offset to resolve z-fighting
@@ -64,6 +74,7 @@ function Display({
         );
     });
 
+    // Boxes for each pixel the current user edited
     const userPixels = filterUserPixels
         ? canvasData.map((pixel: PixelData, i: number) => {
               if (pixel.uid == uid) {
@@ -83,6 +94,22 @@ function Display({
               }
           })
         : null;
+
+    // Boxes of variable height for each pixel
+    const freqPixels = freqData.map((pixel: FreqPixelData, i: number) => {
+        return (
+            // TODO: Normalize pixel height based on max freq
+            <mesh
+                position={[pixel.x, pixel.y, (pixel.freq / 2) * sizeModifier]}
+                key={i}
+                geometry={cubePixelGeometry}
+                scale={[sizeModifier, sizeModifier, pixel.freq * sizeModifier]}
+            >
+                {/* TODO: Fix static pixel color */}
+                <meshStandardMaterial side={DoubleSide} color={'#747bff'} />
+            </mesh>
+        );
+    });
 
     // Plane to allow for selecting of pixel by clicking the mouse
     const mousePositionCapturePlane = (
@@ -254,6 +281,7 @@ function Display({
 
                     {pixels}
                     {filterUserPixels ? userPixels : null}
+                    {filterFreqPixels ? freqPixels : null}
                 </Canvas>
             </div>
         </>

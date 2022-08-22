@@ -20,11 +20,18 @@ function App() {
     // If user is signed in
     const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
     // If canvas should highlight user's pixels
-    const [filterUserPixels, setFilterUserPixels] = useState<boolean>(true);
+    const [filterUserPixels, setFilterUserPixels] = useState<boolean>(false);
+    // If canvas should show frequency chart
+    const [filterFreqPixels, setFilterFreqPixels] = useState<boolean>(false);
 
     // State of canvas
     const [canvasData, setCanvasData] = useState<
         Array<{ x: number; y: number; color: string; uid: string }>
+    >([]);
+
+    // Per-pixel edit frequency
+    const [freqData, setFreqData] = useState<
+        Array<{ x: number; y: number; freq: number }>
     >([]);
 
     // Currently selected pixel; pixel to be edited
@@ -40,10 +47,11 @@ function App() {
     useEffect(() => {
         // Query the chunks collection
         const chunkQuery = query(collection(firestore, 'chunks'));
+        const freqQuery = query(collection(firestore, 'freq'));
 
-        // Establish realtime connection
-        const unsubscribe = onSnapshot(chunkQuery, (snapshot) => {
-            // Clear old canvas Data
+        // Establish realtime connection for canvasData
+        const unsubscribeCanvas = onSnapshot(chunkQuery, (snapshot) => {
+            // Clear old canvas data
             setCanvasData([]);
 
             // Create array to store new canvasData
@@ -119,8 +127,69 @@ function App() {
             setCanvasData(newCanvasData);
         });
 
+        const unsubscribeFreq = onSnapshot(freqQuery, (snapshot) => {
+            // Clear old freq data
+            setFreqData([]);
+
+            // Create array to store new freqData
+            let newFreqData: typeof freqData = [];
+
+            // Add new freq data
+            snapshot.forEach((chunk) => {
+                // For each chunk
+
+                Object.keys(chunk.data()).forEach((pixel) => {
+                    // For each pixel
+
+                    const newPixel = {
+                        // x = x_chunk * CHUNK_SIZE + x_local * CHUNK_SIZE
+                        // if x_local < 0, add another CHUNK_SIZE
+                        // then multiply result by SIZE_MODIFIER
+                        x:
+                            (parseInt(
+                                chunk.id.substring(1, chunk.id.search('y'))
+                            ) *
+                                CHUNK_SIZE +
+                                parseInt(
+                                    pixel.substring(1, pixel.search('y'))
+                                ) +
+                                (parseInt(
+                                    chunk.id.substring(1, chunk.id.search('y'))
+                                ) < 0
+                                    ? CHUNK_SIZE
+                                    : 0)) *
+                            SIZE_MODIFIER,
+                        y:
+                            (parseInt(
+                                chunk.id.substring(chunk.id.search('y') + 1)
+                            ) *
+                                CHUNK_SIZE +
+                                parseInt(
+                                    pixel.substring(pixel.search('y') + 1)
+                                ) +
+                                (parseInt(
+                                    chunk.id.substring(chunk.id.search('y') + 1)
+                                ) < 0
+                                    ? CHUNK_SIZE
+                                    : 0)) *
+                            SIZE_MODIFIER,
+                        freq: chunk.data()[pixel],
+                    };
+
+                    // Add to newFreqData
+                    newFreqData.push(newPixel);
+                });
+            });
+
+            // Update freqData
+            setFreqData(newFreqData);
+            console.log(freqData);
+        });
+
         return () => {
-            unsubscribe();
+            // Close connections
+            unsubscribeCanvas();
+            unsubscribeFreq();
         };
     }, []);
 
@@ -132,6 +201,7 @@ function App() {
                     <div className="App">
                         <Display
                             canvasData={canvasData}
+                            freqData={freqData}
                             selectedPosition={selectedPosition}
                             setSelectedPosition={setSelectedPosition}
                             color={color}
@@ -139,6 +209,7 @@ function App() {
                             canvasWidth={SELECTABLE_CANVAS_WIDTH}
                             canvasHeight={SELECTABLE_CANVAS_HEIGHT}
                             filterUserPixels={filterUserPixels}
+                            filterFreqPixels={filterFreqPixels}
                             uid={firebase?.auth()?.currentUser?.uid}
                         />
 
@@ -148,6 +219,8 @@ function App() {
                             setIsSignedIn={setIsSignedIn}
                             filterUserPixels={filterUserPixels}
                             setFilterUserPixels={setFilterUserPixels}
+                            filterFreqPixels={filterFreqPixels}
+                            setFilterFreqPixels={setFilterFreqPixels}
                         />
 
                         <AddPixelControls

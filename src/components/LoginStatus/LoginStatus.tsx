@@ -9,6 +9,8 @@ interface ProfileProps {
     setIsSignedIn: Function;
     filterUserPixels: boolean;
     setFilterUserPixels: Function;
+    filterFreqPixels: boolean;
+    setFilterFreqPixels: Function;
 }
 
 function LoginStatus({
@@ -17,6 +19,8 @@ function LoginStatus({
     setIsSignedIn,
     filterUserPixels,
     setFilterUserPixels,
+    filterFreqPixels,
+    setFilterFreqPixels,
 }: ProfileProps) {
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
@@ -64,8 +68,18 @@ function LoginStatus({
                 {`${firebase.auth().currentUser.displayName} - `}
             </Link>
             <a onClick={() => firebase.auth().signOut()}>Sign-out</a>
-            <button onClick={() => setFilterUserPixels(!filterUserPixels)}>
+            <br />
+            <button
+                className={styles.toggleButton}
+                onClick={() => setFilterUserPixels(!filterUserPixels)}
+            >
                 Toggle user pixels
+            </button>
+            <button
+                className={styles.toggleButton}
+                onClick={() => setFilterFreqPixels(!filterFreqPixels)}
+            >
+                Toggle freq pixels
             </button>
         </div>
     );

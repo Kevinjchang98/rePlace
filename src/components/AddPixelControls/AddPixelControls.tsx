@@ -30,13 +30,15 @@ function AddPixelControls({
     color,
     setColor,
 }: AddPixelControlsProps) {
-    const [isHidden, setIsHidden] = useState<boolean>(true);
+    const [isHidden, setIsHidden] = useState<boolean>(true); // If minized or not
 
+    // Init timer
     useEffect(() => {
         time.setSeconds(time.getSeconds());
         restart(time);
     }, []);
 
+    // Pushes color and uid data per pixel
     const pushChunkData = async (x: number, y: number, color: string) => {
         const newData: any = {};
         const uid = firebase?.auth()?.currentUser?.uid;
@@ -72,10 +74,11 @@ function AddPixelControls({
         }
     };
 
+    // Pushes edit frequency data per pixel
     const pushFreqData = async (x: number, y: number) => {
         const newData: any = {};
 
-        // Append uid with ! delimiter if it exists, otherwise only include hex
+        // Set new data to be old data incremented by 1
         newData[`x${x % CHUNK_SIZE}y${y % CHUNK_SIZE}`] = increment(1);
 
         // Format chunk id string (e.g. x12y24)
@@ -125,6 +128,7 @@ function AddPixelControls({
                             dark
                         />
                     </div>
+
                     <button
                         className={styles.pointerEventsWrapper}
                         onClick={() => {

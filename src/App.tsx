@@ -19,6 +19,8 @@ const SELECTABLE_CANVAS_HEIGHT = 500; // Height of selectable canvas
 function App() {
     // If user is signed in
     const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
+    // If canvas should highlight user's pixels
+    const [filterUserPixels, setFilterUserPixels] = useState<boolean>(true);
 
     // State of canvas
     const [canvasData, setCanvasData] = useState<
@@ -136,12 +138,16 @@ function App() {
                             sizeModifier={SIZE_MODIFIER}
                             canvasWidth={SELECTABLE_CANVAS_WIDTH}
                             canvasHeight={SELECTABLE_CANVAS_HEIGHT}
+                            filterUserPixels={filterUserPixels}
+                            uid={firebase?.auth()?.currentUser?.uid}
                         />
 
                         <LoginStatus
                             isSignedIn={isSignedIn}
                             firebase={firebase}
                             setIsSignedIn={setIsSignedIn}
+                            filterUserPixels={filterUserPixels}
+                            setFilterUserPixels={setFilterUserPixels}
                         />
 
                         <AddPixelControls

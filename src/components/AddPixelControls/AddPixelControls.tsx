@@ -8,6 +8,7 @@ import {
 import { useEffect, useState } from 'react';
 import { Color, ColorPicker } from 'react-color-palette';
 import { useTimer } from 'react-timer-hook';
+import useEventListener from '../../hooks/useEventListener';
 import 'react-color-palette/lib/css/styles.css';
 import styles from './AddPixelControls.module.css';
 
@@ -103,6 +104,21 @@ function AddPixelControls({
         expiry: time,
     } as any);
 
+    // Adds keyboard support for pressing space to submit color
+    useEventListener('keydown', ({ key }: { key: string }) => {
+        if (key == " ") {
+            if (!isRunning) {
+                console.log(key)
+                pushChunkData(
+                    mousePosition.x,
+                    mousePosition.y,
+                    color.hex
+                );
+                pushFreqData(mousePosition.x, mousePosition.y);
+            }
+        }
+    });
+
     return (
         <div className={styles.wrapper}>
             <button
@@ -142,7 +158,7 @@ function AddPixelControls({
                             }
                         }}
                     >
-                        {!isRunning ? `Submit` : seconds}
+                        {!isRunning ? `Submit (Space key)` : seconds}
                     </button>
                 </div>
             )}

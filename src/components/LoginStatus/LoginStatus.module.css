@@ -5,3 +5,7 @@
     padding: 5px;
     color: #242424;
 }
+
+.toggleButton {
+    max-width: 200px;
+}

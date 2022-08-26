@@ -1,35 +1,55 @@
 import { Canvas } from '@react-three/fiber';
 import { Color } from 'react-color-palette';
-import { PlaneBufferGeometry, DoubleSide, NoToneMapping } from 'three';
+import {
+    PlaneBufferGeometry,
+    DoubleSide,
+    NoToneMapping,
+    BoxBufferGeometry,
+} from 'three';
 import { useMemo, useRef } from 'react';
 import { MapControls } from '@react-three/drei';
 import useEventListener from '../../hooks/useEventListener';
 import styles from './Display.module.css';
 
 interface CanvasProps {
-    canvasData: Array<{ x: number; y: number; color: string }>;
+    canvasData: Array<{ x: number; y: number; color: string; uid: string }>;
+    freqData: Array<{ x: number; y: number; freq: number }>;
     selectedPosition: { x: number; y: number };
     setSelectedPosition: Function;
     color: Color;
     sizeModifier: number;
     canvasWidth: number;
     canvasHeight: number;
+    filterUserPixels: boolean;
+    filterFreqPixels: boolean;
+    uid: string | undefined;
 }
 
 interface PixelData {
     x: number;
     y: number;
     color: string;
+    uid: string;
+}
+
+interface FreqPixelData {
+    x: number;
+    y: number;
+    freq: number;
 }
 
 function Display({
     canvasData,
+    freqData,
     selectedPosition,
     setSelectedPosition,
     color,
     sizeModifier,
     canvasWidth,
     canvasHeight,
+    filterUserPixels,
+    filterFreqPixels,
+    uid,
 }: CanvasProps) {
     const LAYER_OFFSET = 0.001; // Offset to resolve z-fighting
     const INDICATOR_LINE_WIDTH = 0.1; // Thickness of selected pixel indicator outline
@@ -37,6 +57,7 @@ function Display({
     const controlsRef = useRef<any>(); // Ref to MapControls
 
     const pixelGeometry = useMemo(() => new PlaneBufferGeometry(), []); // Pixel geo
+    const cubePixelGeometry = useMemo(() => new BoxBufferGeometry(), []);
 
     // Takes in canvasData, which is an array of objects of type PixelData and
     // returns meshes that contain a singular plane of specified color
@@ -49,6 +70,43 @@ function Display({
                 scale={[sizeModifier, sizeModifier, sizeModifier]}
             >
                 <meshStandardMaterial side={DoubleSide} color={pixel.color} />
+            </mesh>
+        );
+    });
+
+    // Boxes for each pixel the current user edited
+    const userPixels = filterUserPixels
+        ? canvasData.map((pixel: PixelData, i: number) => {
+              if (pixel.uid == uid) {
+                  return (
+                      <mesh
+                          position={[pixel.x, pixel.y, 1 * sizeModifier]}
+                          key={i}
+                          geometry={cubePixelGeometry}
+                          scale={[sizeModifier, sizeModifier, 2 * sizeModifier]}
+                      >
+                          <meshStandardMaterial
+                              side={DoubleSide}
+                              color={pixel.color}
+                          />
+                      </mesh>
+                  );
+              }
+          })
+        : null;
+
+    // Boxes of variable height for each pixel
+    const freqPixels = freqData.map((pixel: FreqPixelData, i: number) => {
+        return (
+            // TODO: Normalize pixel height based on max freq
+            <mesh
+                position={[pixel.x, pixel.y, (pixel.freq / 2) * sizeModifier]}
+                key={i}
+                geometry={cubePixelGeometry}
+                scale={[sizeModifier, sizeModifier, pixel.freq * sizeModifier]}
+            >
+                {/* TODO: Fix static pixel color */}
+                <meshStandardMaterial side={DoubleSide} color={'#747bff'} />
             </mesh>
         );
     });
@@ -222,6 +280,8 @@ function Display({
                     {selectedPixelIndicator}
 
                     {pixels}
+                    {filterUserPixels ? userPixels : null}
+                    {filterFreqPixels ? freqPixels : null}
                 </Canvas>
             </div>
         </>

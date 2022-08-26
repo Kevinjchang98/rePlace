@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { StyledFirebaseAuth } from 'react-firebaseui';
 import { Link } from 'react-router-dom';
 import styles from './LoginStatus.module.css';
@@ -7,9 +7,23 @@ interface ProfileProps {
     firebase: any;
     isSignedIn: boolean;
     setIsSignedIn: Function;
+    filterUserPixels: boolean;
+    setFilterUserPixels: Function;
+    filterFreqPixels: boolean;
+    setFilterFreqPixels: Function;
 }
 
-function LoginStatus({ firebase, isSignedIn, setIsSignedIn }: ProfileProps) {
+function LoginStatus({
+    firebase,
+    isSignedIn,
+    setIsSignedIn,
+    filterUserPixels,
+    setFilterUserPixels,
+    filterFreqPixels,
+    setFilterFreqPixels,
+}: ProfileProps) {
+    const [isExpanded, setIsExpanded] = useState<boolean>(false);
+
     // Configure FirebaseUI.
     const uiConfig = {
         // Popup signin flow rather than redirect flow.
@@ -39,12 +53,34 @@ function LoginStatus({ firebase, isSignedIn, setIsSignedIn }: ProfileProps) {
                 firebaseAuth={firebase.auth()}
             />
         </div>
-    ) : (
+    ) : !isExpanded ? (
         <div className={styles.wrapper}>
+            <a onClick={() => setIsExpanded(!isExpanded)}>{`Expand - `}</a>
             <Link to="/profile">
                 {`${firebase.auth().currentUser.displayName} - `}
             </Link>
             <a onClick={() => firebase.auth().signOut()}>Sign-out</a>
+        </div>
+    ) : (
+        <div className={styles.wrapper}>
+            <a onClick={() => setIsExpanded(!isExpanded)}>{`Minimize - `}</a>
+            <Link to="/profile">
+                {`${firebase.auth().currentUser.displayName} - `}
+            </Link>
+            <a onClick={() => firebase.auth().signOut()}>Sign-out</a>
+            <br />
+            <button
+                className={styles.toggleButton}
+                onClick={() => setFilterUserPixels(!filterUserPixels)}
+            >
+                Toggle user pixels
+            </button>
+            <button
+                className={styles.toggleButton}
+                onClick={() => setFilterFreqPixels(!filterFreqPixels)}
+            >
+                Toggle freq pixels
+            </button>
         </div>
     );
 }

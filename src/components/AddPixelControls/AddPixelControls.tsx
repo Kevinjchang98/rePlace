@@ -8,6 +8,7 @@ import {
 import { useEffect, useState } from 'react';
 import { Color, ColorPicker } from 'react-color-palette';
 import { useTimer } from 'react-timer-hook';
+import useEventListener from '../../hooks/useEventListener';
 import 'react-color-palette/lib/css/styles.css';
 import styles from './AddPixelControls.module.css';
 
@@ -30,19 +31,18 @@ function AddPixelControls({
     color,
     setColor,
 }: AddPixelControlsProps) {
-    const [isHidden, setIsHidden] = useState<boolean>(true);
-    const [isSubmittable, setIsSubmittable] = useState<boolean>(true);
+    const [isHidden, setIsHidden] = useState<boolean>(true); // If minized or not
 
+    // Init timer
     useEffect(() => {
         time.setSeconds(time.getSeconds());
         restart(time);
     }, []);
 
+    // Pushes color and uid data per pixel
     const pushChunkData = async (x: number, y: number, color: string) => {
         const newData: any = {};
         const uid = firebase?.auth()?.currentUser?.uid;
-
-        setIsSubmittable(false);
 
         time.setSeconds(time.getSeconds() + TIMER_DELAY);
         restart(time);
@@ -52,15 +52,15 @@ function AddPixelControls({
             color + (uid ? `!${uid}` : '');
 
         // Format chunk id string (e.g. x12y24)
-        const newChunkId = String(
+        const chunkId = String(
             'x' + Math.floor(x / CHUNK_SIZE) + 'y' + Math.floor(y / CHUNK_SIZE)
         );
 
         // Try to update existing chunk doc, if it doesn't exist then create it
         try {
-            await updateDoc(doc(firestore, 'chunks', newChunkId), newData);
+            await updateDoc(doc(firestore, 'chunks', chunkId), newData);
         } catch (error) {
-            await setDoc(doc(firestore, 'chunks', newChunkId), newData);
+            await setDoc(doc(firestore, 'chunks', chunkId), newData);
         }
 
         // Try to update user doc and increment number of pixels edited
@@ -75,15 +75,49 @@ function AddPixelControls({
         }
     };
 
+    // Pushes edit frequency data per pixel
+    const pushFreqData = async (x: number, y: number) => {
+        const newData: any = {};
+
+        // Set new data to be old data incremented by 1
+        newData[`x${x % CHUNK_SIZE}y${y % CHUNK_SIZE}`] = increment(1);
+
+        // Format chunk id string (e.g. x12y24)
+        const chunkId = String(
+            'x' + Math.floor(x / CHUNK_SIZE) + 'y' + Math.floor(y / CHUNK_SIZE)
+        );
+
+        // Try to update existing chunk doc, if it doesn't exist then create it
+        try {
+            await updateDoc(doc(firestore, 'freq', chunkId), newData);
+        } catch (error) {
+            await setDoc(doc(firestore, 'freq', chunkId), newData);
+        }
+    };
+
     // Time used for timer
     const time = new Date();
 
     // TODO: Invalid expiryTimestamp settings warning on mount
-    // Exposes seconds counter and restart() method
-    const { seconds, restart } = useTimer({
+    // Exposes seconds counter, restart() method, and isRunning
+    const { seconds, restart, isRunning } = useTimer({
         expiry: time,
-        onExpire: () => setIsSubmittable(true),
     } as any);
+
+    // Adds keyboard support for pressing space to submit color
+    useEventListener('keydown', ({ key }: { key: string }) => {
+        if (key == " ") {
+            if (!isRunning) {
+                console.log(key)
+                pushChunkData(
+                    mousePosition.x,
+                    mousePosition.y,
+                    color.hex
+                );
+                pushFreqData(mousePosition.x, mousePosition.y);
+            }
+        }
+    });
 
     return (
         <div className={styles.wrapper}>
@@ -110,19 +144,21 @@ function AddPixelControls({
                             dark
                         />
                     </div>
+
                     <button
                         className={styles.pointerEventsWrapper}
                         onClick={() => {
-                            if (isSubmittable) {
+                            if (!isRunning) {
                                 pushChunkData(
                                     mousePosition.x,
                                     mousePosition.y,
                                     color.hex
                                 );
+                                pushFreqData(mousePosition.x, mousePosition.y);
                             }
                         }}
                     >
-                        {isSubmittable ? `Submit` : seconds}
+                        {!isRunning ? `Submit (Space key)` : seconds}
                     </button>
                 </div>
             )}

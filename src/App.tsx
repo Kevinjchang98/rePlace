@@ -34,9 +34,11 @@ function App() {
     const [canvasData, setCanvasData] = useState<
         Array<Array<PixelData | null>>
     >(
-        new Array(SELECTABLE_CANVAS_WIDTH)
-            .fill(null)
-            .map(() => new Array(SELECTABLE_CANVAS_HEIGHT).fill(null))
+        // TODO: Check which has better performance
+        // new Array(SELECTABLE_CANVAS_WIDTH)
+        //     .fill(null)
+        //     .map(() => new Array(SELECTABLE_CANVAS_HEIGHT).fill(null))
+        Array.from(Array(SELECTABLE_CANVAS_WIDTH), () => new Array(4))
     );
 
     // Currently selected pixel; pixel to be edited

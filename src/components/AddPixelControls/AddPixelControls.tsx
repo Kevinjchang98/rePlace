@@ -106,14 +106,9 @@ function AddPixelControls({
 
     // Adds keyboard support for pressing space to submit color
     useEventListener('keydown', ({ key }: { key: string }) => {
-        if (key == " ") {
+        if (key == ' ') {
             if (!isRunning) {
-                console.log(key)
-                pushChunkData(
-                    mousePosition.x,
-                    mousePosition.y,
-                    color.hex
-                );
+                pushChunkData(mousePosition.x, mousePosition.y, color.hex);
                 pushFreqData(mousePosition.x, mousePosition.y);
             }
         }

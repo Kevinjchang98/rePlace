@@ -16,6 +16,12 @@ const SIZE_MODIFIER = 0.25; // Multiplies size of all three.js objects by this
 const SELECTABLE_CANVAS_WIDTH = 500; // Width of selectable canvas area
 const SELECTABLE_CANVAS_HEIGHT = 500; // Height of selectable canvas
 
+interface PixelData {
+    color?: string;
+    uid?: string;
+    freq?: number;
+}
+
 function App() {
     // If user is signed in
     const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
@@ -24,15 +30,14 @@ function App() {
     // If canvas should show frequency chart
     const [filterFreqPixels, setFilterFreqPixels] = useState<boolean>(false);
 
-    // State of canvas
+    // State of canvas; init empty 2D array of null objects
     const [canvasData, setCanvasData] = useState<
-        Array<{ x: number; y: number; color: string; uid: string }>
-    >([]);
-
-    // Per-pixel edit frequency
-    const [freqData, setFreqData] = useState<
-        Array<{ x: number; y: number; freq: number }>
-    >([]);
+        Array<Array<PixelData | null>>
+    >(
+        new Array(SELECTABLE_CANVAS_WIDTH)
+            .fill(null)
+            .map(() => new Array(SELECTABLE_CANVAS_HEIGHT).fill(null))
+    );
 
     // Currently selected pixel; pixel to be edited
     const [selectedPosition, setSelectedPosition] = useState<{
@@ -51,11 +56,8 @@ function App() {
 
         // Establish realtime connection for canvasData
         const unsubscribeCanvas = onSnapshot(chunkQuery, (snapshot) => {
-            // Clear old canvas data
-            setCanvasData([]);
-
             // Create array to store new canvasData
-            let newCanvasData: typeof canvasData = [];
+            let newCanvasData: typeof canvasData = [...canvasData];
 
             // Add new canvas data
             snapshot.forEach((chunk) => {
@@ -65,37 +67,32 @@ function App() {
                     // For each pixel
 
                     const newPixel = {
-                        // x = x_chunk * CHUNK_SIZE + x_local * CHUNK_SIZE
+                        // x = x_chunk * CHUNK_SIZE + x_local
                         // if x_local < 0, add another CHUNK_SIZE
-                        // then multiply result by SIZE_MODIFIER
                         x:
-                            (parseInt(
+                            parseInt(
                                 chunk.id.substring(1, chunk.id.search('y'))
                             ) *
                                 CHUNK_SIZE +
-                                parseInt(
-                                    pixel.substring(1, pixel.search('y'))
-                                ) +
-                                (parseInt(
-                                    chunk.id.substring(1, chunk.id.search('y'))
-                                ) < 0
-                                    ? CHUNK_SIZE
-                                    : 0)) *
-                            SIZE_MODIFIER,
-                        y:
+                            parseInt(pixel.substring(1, pixel.search('y'))) +
                             (parseInt(
+                                chunk.id.substring(1, chunk.id.search('y'))
+                            ) < 0
+                                ? CHUNK_SIZE
+                                : 0) +
+                            SELECTABLE_CANVAS_WIDTH / 2,
+                        y:
+                            parseInt(
                                 chunk.id.substring(chunk.id.search('y') + 1)
                             ) *
                                 CHUNK_SIZE +
-                                parseInt(
-                                    pixel.substring(pixel.search('y') + 1)
-                                ) +
-                                (parseInt(
-                                    chunk.id.substring(chunk.id.search('y') + 1)
-                                ) < 0
-                                    ? CHUNK_SIZE
-                                    : 0)) *
-                            SIZE_MODIFIER,
+                            parseInt(pixel.substring(pixel.search('y') + 1)) +
+                            (parseInt(
+                                chunk.id.substring(chunk.id.search('y') + 1)
+                            ) < 0
+                                ? CHUNK_SIZE
+                                : 0) +
+                            SELECTABLE_CANVAS_HEIGHT / 2,
                         // Decode color and uid from chunk.data()[pixel] which
                         // has format #112233!abcd if color is #112233 and uid
                         // is abcd or #112233 if no uid
@@ -119,7 +116,11 @@ function App() {
                     };
 
                     // Add to newCanvasData
-                    newCanvasData.push(newPixel);
+                    newCanvasData[newPixel.x][newPixel.y] = {
+                        color: newPixel.color,
+                        uid: newPixel.uid,
+                        ...newCanvasData[newPixel.x][newPixel.y],
+                    };
                 });
             });
 
@@ -128,11 +129,8 @@ function App() {
         });
 
         const unsubscribeFreq = onSnapshot(freqQuery, (snapshot) => {
-            // Clear old freq data
-            setFreqData([]);
-
             // Create array to store new freqData
-            let newFreqData: typeof freqData = [];
+            let newCanvasData: typeof canvasData = [...canvasData];
 
             // Add new freq data
             snapshot.forEach((chunk) => {
@@ -142,48 +140,45 @@ function App() {
                     // For each pixel
 
                     const newPixel = {
-                        // x = x_chunk * CHUNK_SIZE + x_local * CHUNK_SIZE
+                        // x = x_chunk * CHUNK_SIZE + x_local
                         // if x_local < 0, add another CHUNK_SIZE
-                        // then multiply result by SIZE_MODIFIER
                         x:
-                            (parseInt(
+                            parseInt(
                                 chunk.id.substring(1, chunk.id.search('y'))
                             ) *
                                 CHUNK_SIZE +
-                                parseInt(
-                                    pixel.substring(1, pixel.search('y'))
-                                ) +
-                                (parseInt(
-                                    chunk.id.substring(1, chunk.id.search('y'))
-                                ) < 0
-                                    ? CHUNK_SIZE
-                                    : 0)) *
-                            SIZE_MODIFIER,
-                        y:
+                            parseInt(pixel.substring(1, pixel.search('y'))) +
                             (parseInt(
+                                chunk.id.substring(1, chunk.id.search('y'))
+                            ) < 0
+                                ? CHUNK_SIZE
+                                : 0) +
+                            SELECTABLE_CANVAS_WIDTH / 2,
+                        y:
+                            parseInt(
                                 chunk.id.substring(chunk.id.search('y') + 1)
                             ) *
                                 CHUNK_SIZE +
-                                parseInt(
-                                    pixel.substring(pixel.search('y') + 1)
-                                ) +
-                                (parseInt(
-                                    chunk.id.substring(chunk.id.search('y') + 1)
-                                ) < 0
-                                    ? CHUNK_SIZE
-                                    : 0)) *
-                            SIZE_MODIFIER,
+                            parseInt(pixel.substring(pixel.search('y') + 1)) +
+                            (parseInt(
+                                chunk.id.substring(chunk.id.search('y') + 1)
+                            ) < 0
+                                ? CHUNK_SIZE
+                                : 0) +
+                            SELECTABLE_CANVAS_HEIGHT / 2,
                         freq: chunk.data()[pixel],
                     };
 
                     // Add to newFreqData
-                    newFreqData.push(newPixel);
+                    newCanvasData[newPixel.x][newPixel.y] = {
+                        ...newCanvasData[newPixel.x][newPixel.y],
+                        freq: newPixel.freq,
+                    };
                 });
             });
 
             // Update freqData
-            setFreqData(newFreqData);
-            console.log(freqData);
+            setCanvasData(newCanvasData);
         });
 
         return () => {
@@ -201,7 +196,6 @@ function App() {
                     <div className="App">
                         <Display
                             canvasData={canvasData}
-                            freqData={freqData}
                             selectedPosition={selectedPosition}
                             setSelectedPosition={setSelectedPosition}
                             color={color}

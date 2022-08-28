@@ -12,8 +12,7 @@ import useEventListener from '../../hooks/useEventListener';
 import styles from './Display.module.css';
 
 interface CanvasProps {
-    canvasData: Array<{ x: number; y: number; color: string; uid: string }>;
-    freqData: Array<{ x: number; y: number; freq: number }>;
+    canvasData: Array<Array<PixelData | null>>;
     selectedPosition: { x: number; y: number };
     setSelectedPosition: Function;
     color: Color;
@@ -26,21 +25,13 @@ interface CanvasProps {
 }
 
 interface PixelData {
-    x: number;
-    y: number;
-    color: string;
-    uid: string;
-}
-
-interface FreqPixelData {
-    x: number;
-    y: number;
-    freq: number;
+    color?: string;
+    uid?: string;
+    freq?: number;
 }
 
 function Display({
     canvasData,
-    freqData,
     selectedPosition,
     setSelectedPosition,
     color,
@@ -51,65 +42,113 @@ function Display({
     filterFreqPixels,
     uid,
 }: CanvasProps) {
-    const LAYER_OFFSET = 0.001; // Offset to resolve z-fighting
-    const INDICATOR_LINE_WIDTH = 0.1; // Thickness of selected pixel indicator outline
+    // Offset to resolve z-fighting
+    const LAYER_OFFSET = 0.001;
+    // Thickness of selected pixel indicator outline
+    const INDICATOR_LINE_WIDTH = 0.1;
 
     const controlsRef = useRef<any>(); // Ref to MapControls
 
-    const pixelGeometry = useMemo(() => new PlaneBufferGeometry(), []); // Pixel geo
+    // Pixel geo
+    const pixelGeometry = useMemo(() => new PlaneBufferGeometry(), []);
     const cubePixelGeometry = useMemo(() => new BoxBufferGeometry(), []);
 
-    // Takes in canvasData, which is an array of objects of type PixelData and
+    // Takes in canvasData, which is a 2D array of objects of type PixelData and
     // returns meshes that contain a singular plane of specified color
-    const pixels = canvasData.map((pixel: PixelData, i: number) => {
-        return (
-            <mesh
-                position={[pixel.x, pixel.y, 0]}
-                key={i}
-                geometry={pixelGeometry}
-                scale={[sizeModifier, sizeModifier, sizeModifier]}
-            >
-                <meshStandardMaterial side={DoubleSide} color={pixel.color} />
-            </mesh>
-        );
+    const pixels = canvasData.map((row: Array<PixelData | null>, i: number) => {
+        return row.map((pixel: any, j: number) => {
+            if (row != null && pixel != null) {
+                return (
+                    <mesh
+                        position={[
+                            (i - canvasWidth / 2) * sizeModifier,
+                            (j - canvasHeight / 2) * sizeModifier,
+                            0,
+                        ]}
+                        key={i * j}
+                        geometry={pixelGeometry}
+                        scale={[sizeModifier, sizeModifier, sizeModifier]}
+                    >
+                        <meshStandardMaterial
+                            side={DoubleSide}
+                            color={pixel.color}
+                        />
+                    </mesh>
+                );
+            }
+        });
     });
 
-    // Boxes for each pixel the current user edited
-    const userPixels = filterUserPixels
-        ? canvasData.map((pixel: PixelData, i: number) => {
-              if (pixel.uid == uid) {
-                  return (
-                      <mesh
-                          position={[pixel.x, pixel.y, 1 * sizeModifier]}
-                          key={i}
-                          geometry={cubePixelGeometry}
-                          scale={[sizeModifier, sizeModifier, 2 * sizeModifier]}
-                      >
-                          <meshStandardMaterial
-                              side={DoubleSide}
-                              color={pixel.color}
-                          />
-                      </mesh>
-                  );
-              }
-          })
-        : null;
+    // Takes in canvasData and creates cubes for each of the currently logged
+    // in user's pixels
+    const userPixels = canvasData.map(
+        (row: Array<PixelData | null>, i: number) => {
+            return row.map((pixel: PixelData | null, j: number) => {
+                if (row != null && pixel != null && pixel.uid == uid) {
+                    return (
+                        <mesh
+                            position={[
+                                (i - canvasWidth / 2) * sizeModifier,
+                                (j - canvasHeight / 2) * sizeModifier,
+                                1 * sizeModifier,
+                            ]}
+                            key={i * j}
+                            geometry={cubePixelGeometry}
+                            scale={[
+                                sizeModifier,
+                                sizeModifier,
+                                2 * sizeModifier,
+                            ]}
+                        >
+                            <meshStandardMaterial
+                                side={DoubleSide}
+                                color={pixel.color}
+                            />
+                        </mesh>
+                    );
+                }
+            });
+        }
+    );
+
+    // Takes in canvasData and creates cubes with height corresponding to edit
+    // frequency of that pixel by all users
+    const freqPixels = canvasData.map(
+        (row: Array<PixelData | null>, i: number) => {
+            return row.map((pixel: PixelData | null, j: number) => {
+                if (row != null && pixel != null && pixel.freq != null) {
+                    return (
+                        <mesh
+                            position={[
+                                (i - canvasWidth / 2) * sizeModifier,
+                                (j - canvasHeight / 2) * sizeModifier,
+                                (pixel.freq / 2) * sizeModifier,
+                            ]}
+                            key={i * j}
+                            geometry={cubePixelGeometry}
+                            scale={[
+                                sizeModifier,
+                                sizeModifier,
+                                pixel.freq * sizeModifier,
+                            ]}
+                        >
+                            <meshStandardMaterial
+                                side={DoubleSide}
+                                color={pixel.color}
+                            />
+                        </mesh>
+                    );
+                }
+            });
+        }
+    );
 
     // Boxes of variable height for each pixel
-    const freqPixels = freqData.map((pixel: FreqPixelData, i: number) => {
-        return (
-            // TODO: Normalize pixel height based on max freq
-            <mesh
-                position={[pixel.x, pixel.y, (pixel.freq / 2) * sizeModifier]}
-                key={i}
-                geometry={cubePixelGeometry}
-                scale={[sizeModifier, sizeModifier, pixel.freq * sizeModifier]}
-            >
-                {/* TODO: Fix static pixel color */}
-                <meshStandardMaterial side={DoubleSide} color={'#747bff'} />
-            </mesh>
-        );
-    });
+    // const freqPixels = freqData.map((pixel: FreqPixelData, i: number) => {
+    //     return (
+    //         // TODO: Normalize pixel height based on max freq
+    //     );
+    // });
 
     // Plane to allow for selecting of pixel by clicking the mouse
     const mousePositionCapturePlane = (

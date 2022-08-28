@@ -117,9 +117,9 @@ function App() {
 
                     // Add to newCanvasData
                     newCanvasData[newPixel.x][newPixel.y] = {
+                        ...newCanvasData[newPixel.x][newPixel.y],
                         color: newPixel.color,
                         uid: newPixel.uid,
-                        ...newCanvasData[newPixel.x][newPixel.y],
                     };
                 });
             });

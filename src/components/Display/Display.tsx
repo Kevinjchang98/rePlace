@@ -143,13 +143,6 @@ function Display({
         }
     );
 
-    // Boxes of variable height for each pixel
-    // const freqPixels = freqData.map((pixel: FreqPixelData, i: number) => {
-    //     return (
-    //         // TODO: Normalize pixel height based on max freq
-    //     );
-    // });
-
     // Plane to allow for selecting of pixel by clicking the mouse
     const mousePositionCapturePlane = (
         <mesh

@@ -213,19 +213,20 @@ function App() {
                             isSignedIn={isSignedIn}
                             firebase={firebase}
                             setIsSignedIn={setIsSignedIn}
-                            filterUserPixels={filterUserPixels}
-                            setFilterUserPixels={setFilterUserPixels}
-                            filterFreqPixels={filterFreqPixels}
-                            setFilterFreqPixels={setFilterFreqPixels}
                         />
 
                         <AddPixelControls
                             firestore={firestore}
                             firebase={firebase}
+                            isSignedIn={isSignedIn}
                             CHUNK_SIZE={CHUNK_SIZE}
                             mousePosition={selectedPosition}
                             color={color}
                             setColor={setColor}
+                            filterUserPixels={filterUserPixels}
+                            setFilterUserPixels={setFilterUserPixels}
+                            filterFreqPixels={filterFreqPixels}
+                            setFilterFreqPixels={setFilterFreqPixels}
                         />
 
                         <CurrentPosition mousePosition={selectedPosition} />

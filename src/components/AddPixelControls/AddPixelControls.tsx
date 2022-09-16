@@ -15,10 +15,15 @@ import styles from './AddPixelControls.module.css';
 interface AddPixelControlsProps {
     firestore: Firestore;
     firebase: any;
+    isSignedIn: boolean;
     CHUNK_SIZE: number;
     mousePosition: { x: number; y: number };
     color: Color;
     setColor: Function;
+    filterUserPixels: boolean;
+    setFilterUserPixels: Function;
+    filterFreqPixels: boolean;
+    setFilterFreqPixels: Function;
 }
 
 const TIMER_DELAY = 3; // Minimum seconds between pixels placed
@@ -26,10 +31,15 @@ const TIMER_DELAY = 3; // Minimum seconds between pixels placed
 function AddPixelControls({
     firestore,
     firebase,
+    isSignedIn,
     CHUNK_SIZE,
     mousePosition,
     color,
     setColor,
+    filterUserPixels,
+    setFilterUserPixels,
+    filterFreqPixels,
+    setFilterFreqPixels,
 }: AddPixelControlsProps) {
     const [isHidden, setIsHidden] = useState<boolean>(true); // If minized or not
 
@@ -155,6 +165,26 @@ function AddPixelControls({
                     >
                         {!isRunning ? `Submit (Space key)` : seconds}
                     </button>
+                    {isSignedIn ? (
+                        <>
+                            <button
+                                className={styles.pointerEventsWrapper}
+                                onClick={() =>
+                                    setFilterUserPixels(!filterUserPixels)
+                                }
+                            >
+                                Toggle user pixels
+                            </button>
+                            <button
+                                className={styles.pointerEventsWrapper}
+                                onClick={() =>
+                                    setFilterFreqPixels(!filterFreqPixels)
+                                }
+                            >
+                                Toggle freq pixels
+                            </button>
+                        </>
+                    ) : null}
                 </div>
             )}
         </div>

@@ -7,21 +7,9 @@ interface ProfileProps {
     firebase: any;
     isSignedIn: boolean;
     setIsSignedIn: Function;
-    filterUserPixels: boolean;
-    setFilterUserPixels: Function;
-    filterFreqPixels: boolean;
-    setFilterFreqPixels: Function;
 }
 
-function LoginStatus({
-    firebase,
-    isSignedIn,
-    setIsSignedIn,
-    filterUserPixels,
-    setFilterUserPixels,
-    filterFreqPixels,
-    setFilterFreqPixels,
-}: ProfileProps) {
+function LoginStatus({ firebase, isSignedIn, setIsSignedIn }: ProfileProps) {
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
     // Configure FirebaseUI.
@@ -53,34 +41,12 @@ function LoginStatus({
                 firebaseAuth={firebase.auth()}
             />
         </div>
-    ) : !isExpanded ? (
-        <div className={styles.wrapper}>
-            <a onClick={() => setIsExpanded(!isExpanded)}>{`Expand - `}</a>
-            <Link to="/profile">
-                {`${firebase.auth().currentUser.displayName} - `}
-            </Link>
-            <a onClick={() => firebase.auth().signOut()}>Sign-out</a>
-        </div>
     ) : (
         <div className={styles.wrapper}>
-            <a onClick={() => setIsExpanded(!isExpanded)}>{`Minimize - `}</a>
             <Link to="/profile">
                 {`${firebase.auth().currentUser.displayName} - `}
             </Link>
             <a onClick={() => firebase.auth().signOut()}>Sign-out</a>
-            <br />
-            <button
-                className={styles.toggleButton}
-                onClick={() => setFilterUserPixels(!filterUserPixels)}
-            >
-                Toggle user pixels
-            </button>
-            <button
-                className={styles.toggleButton}
-                onClick={() => setFilterFreqPixels(!filterFreqPixels)}
-            >
-                Toggle freq pixels
-            </button>
         </div>
     );
 }

@@ -10,6 +10,7 @@ import CurrentPosition from './components/CurrentPosition/CurrentPosition';
 import LoginStatus from './components/LoginStatus/LoginStatus';
 import Profile from './components/Profile/Profile';
 import { Route, Routes } from 'react-router-dom';
+import Help from './components/Help/Help';
 
 const CHUNK_SIZE = 64; // Number of pixels stored as one document in Firestore
 const SIZE_MODIFIER = 0.25; // Multiplies size of all three.js objects by this
@@ -34,9 +35,11 @@ function App() {
     const [canvasData, setCanvasData] = useState<
         Array<Array<PixelData | null>>
     >(
-        new Array(SELECTABLE_CANVAS_WIDTH)
-            .fill(null)
-            .map(() => new Array(SELECTABLE_CANVAS_HEIGHT).fill(null))
+        // TODO: Check which has better performance
+        // new Array(SELECTABLE_CANVAS_WIDTH)
+        //     .fill(null)
+        //     .map(() => new Array(SELECTABLE_CANVAS_HEIGHT).fill(null))
+        Array.from(Array(SELECTABLE_CANVAS_WIDTH), () => new Array(4))
     );
 
     // Currently selected pixel; pixel to be edited
@@ -211,22 +214,25 @@ function App() {
                             isSignedIn={isSignedIn}
                             firebase={firebase}
                             setIsSignedIn={setIsSignedIn}
+                        />
+
+                        <AddPixelControls
+                            firestore={firestore}
+                            firebase={firebase}
+                            isSignedIn={isSignedIn}
+                            CHUNK_SIZE={CHUNK_SIZE}
+                            mousePosition={selectedPosition}
+                            color={color}
+                            setColor={setColor}
                             filterUserPixels={filterUserPixels}
                             setFilterUserPixels={setFilterUserPixels}
                             filterFreqPixels={filterFreqPixels}
                             setFilterFreqPixels={setFilterFreqPixels}
                         />
 
-                        <AddPixelControls
-                            firestore={firestore}
-                            firebase={firebase}
-                            CHUNK_SIZE={CHUNK_SIZE}
-                            mousePosition={selectedPosition}
-                            color={color}
-                            setColor={setColor}
-                        />
-
                         <CurrentPosition mousePosition={selectedPosition} />
+
+                        <Help />
                     </div>
                 }
             />

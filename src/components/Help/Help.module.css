@@ -1,0 +1,38 @@
+.buttonWrapper {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    z-index: 2;
+    padding: 0;
+}
+
+.popupWrapper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+    background-color: #2424244f;
+    display: flex;
+    align-items: center;
+}
+
+.popupContentWrapper {
+    margin: auto;
+    width: 500px;
+    max-width: calc(100% - 60px);
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: #1a1a1a;
+}
+
+@media (prefers-color-scheme: light) {
+    .popupContentWrapper {
+        background-color: #f9f9f9;
+    }
+}

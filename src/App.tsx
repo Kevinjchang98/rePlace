@@ -10,6 +10,7 @@ import CurrentPosition from './components/CurrentPosition/CurrentPosition';
 import LoginStatus from './components/LoginStatus/LoginStatus';
 import Profile from './components/Profile/Profile';
 import { Route, Routes } from 'react-router-dom';
+import Help from './components/Help/Help';
 
 const CHUNK_SIZE = 64; // Number of pixels stored as one document in Firestore
 const SIZE_MODIFIER = 0.25; // Multiplies size of all three.js objects by this
@@ -230,6 +231,8 @@ function App() {
                         />
 
                         <CurrentPosition mousePosition={selectedPosition} />
+
+                        <Help />
                     </div>
                 }
             />
